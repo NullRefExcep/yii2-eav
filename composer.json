@@ -1,0 +1,24 @@
+{
+    "name": "nullref/yii2-eav",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": ">=2.0.4",
+        "nullref/yii2-useful": "dev-master",
+        "nullref/yii2-sb-admin-2": "dev-master",
+        "nullref/yii2-core": "dev-master"
+    },
+    "require-dev": {
+        "yiisoft/yii2-gii": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "nullref\\admin\\": "src/"
+        }
+    },
+    "extra": {
+        "bootstrap":"nullref\\admin\\Bootstrap"
+    }
+}
