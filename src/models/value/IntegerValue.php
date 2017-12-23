@@ -35,7 +35,7 @@ class IntegerValue extends Value
      */
     public function addWhere($query, $table = false)
     {
-        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->name;
+        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
 
         foreach (['from' => '>=', 'to' => '<='] as $key => $operator) {
             if (isset($this->value[$key]) && $this->value[$key] !== '') {

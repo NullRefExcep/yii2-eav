@@ -43,7 +43,7 @@ class StringValue extends Value
      */
     public function addWhere($query, $table = false)
     {
-        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->name;
+        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
         $query->andWhere(['like', "$table.value", $this->value]);
     }
 }

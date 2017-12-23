@@ -43,7 +43,7 @@ class Value extends ActiveRecord
      */
     public function addJoin($query, $entityTable, $table = false)
     {
-        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->name;
+        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
         return $query->innerJoin([$table => static::tableName()], "$entityTable.id = $table.entity_id");
     }
 
@@ -61,7 +61,7 @@ class Value extends ActiveRecord
      */
     public function addWhere($query, $table = false)
     {
-        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->name;
+        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
         $query->andWhere(["$table.value" => $this->value]);
     }
 
