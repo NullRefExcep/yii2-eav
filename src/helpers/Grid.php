@@ -48,6 +48,7 @@ class Grid
             }
             $column = [
                 'attribute' => $code,
+                'label' => $item['name'],
             ];
             if (isset($item['config']['editable']) && $item['config']['editable']) {
                 $column = self::getEditableConfig($column, $item);

@@ -40,6 +40,8 @@ class Attribute extends ActiveRecord
     const TYPE_URL = 'url';
     const TYPE_TEXT = 'text';
 
+    protected $_optionsMap = null;
+
     /**
      * @inheritdoc
      */
@@ -132,6 +134,17 @@ class Attribute extends ActiveRecord
     public function getOptions()
     {
         return $this->hasMany(Option::className(), ['attribute_id' => 'id']);
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getOptionsMap()
+    {
+        if ($this->_optionsMap === null) {
+            $this->_optionsMap = $this->getOptions()->indexBy('id')->select('value')->column();
+        }
+        return $this->_optionsMap;
     }
 
     /**

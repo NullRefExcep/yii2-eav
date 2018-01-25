@@ -37,10 +37,13 @@ class Entity extends Model
     protected $_attributesConfig = [];
     protected $_attributes = [];
 
+    protected static $_attributeSetCache = [];
+
     /**
      * @param $entity
-     * @param ActiveRecord $owner
+     * @param $owner
      * @return object
+     * @throws InvalidConfigException
      */
     public static function create($entity, $owner)
     {
@@ -57,10 +60,16 @@ class Entity extends Model
     {
         parent::init();
         foreach ($this->sets as $set) {
-            if (!($set instanceof Set)) {
-                throw new InvalidConfigException('Entity set should be instance of ' . Set::class);
+            if (isset(self::$_attributeSetCache[$set->id])) {
+                $attributeList = self::$_attributeSetCache[$set->id];
+            } else {
+                if (!($set instanceof Set)) {
+                    throw new InvalidConfigException('Entity set should be instance of ' . Set::class);
+                }
+                $attributeList = $set->attributeList;
+                self::$_attributeSetCache[$set->id] = $attributeList;
             }
-            foreach ($set->attributeList as $code => $attribute) {
+            foreach ($attributeList as $code => $attribute) {
                 if (isset($this->_attributesConfig[$code])) {
                     throw new InvalidConfigException('Attribute code should be unique');
                 }
@@ -77,12 +86,9 @@ class Entity extends Model
      */
     protected function getAttributeConfig($attribute)
     {
-        $attr = [
-            'type' => $attribute->type,
-            'config' => $attribute->config,
-        ];
+        $attr = $attribute->attributes;
         if ($attribute->hasOptions()) {
-            $attr['items'] = $attribute->getOptions()->indexBy('id')->select('value')->column();
+            $attr['items'] = $attribute->getOptionsMap();
         }
         return $attr;
     }
@@ -157,7 +163,9 @@ class Entity extends Model
     }
 
     /**
-     *
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function delete()
     {
@@ -179,7 +187,7 @@ class Entity extends Model
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function save()
     {
@@ -192,10 +200,11 @@ class Entity extends Model
      * @param $attrCode
      * @param $owner
      * @param $value
+     * @throws Exception
      */
     protected function setValue($attrCode, $owner, $value)
     {
-        $attr = Attribute::findOne(['code' => $attrCode]);
+        $attr = $this->getAttributeModel($attrCode);
 
         $id = $owner->primaryKey;
         $valueClass = $attr->getValueClass();
@@ -214,11 +223,13 @@ class Entity extends Model
         if ($valueModel->isNewRecord || $valueModel->isAttributeChanged('value', $this->identicalValueCompare)) {
             $valueModel->save();
         }
-        TagDependency::invalidate(Yii::$app->cache, [$attr->id, $id]);
+        TagDependency::invalidate(Yii::$app->cache, $valueModel->getCacheKey());
     }
 
     /**
-     *
+     * @throws Exception
+     * @throws \Exception
+     * @throws \Throwable
      */
     public function find()
     {
@@ -232,11 +243,14 @@ class Entity extends Model
     /**
      * @param $attrCode
      * @param $owner
-     * @return false|null|string
+     * @return mixed
+     * @throws Exception
+     * @throws \Exception
+     * @throws \Throwable
      */
     protected function getValue($attrCode, $owner)
     {
-        $attr = Attribute::findOne(['code' => $attrCode]);
+        $attr = $this->getAttributeModel($attrCode);
 
         $id = $owner->primaryKey;
         $valueClass = $attr->getValueClass();
@@ -247,7 +261,7 @@ class Entity extends Model
             /** @var ValueQuery $query */
             $query = $valueClass::find();
             return $query->select('value')->andWhere(['attribute_id' => $attr->id, 'entity_id' => $id])->scalar();
-        }, null, new TagDependency(['tags' => [$attr->id, $id]]));
+        }, null, new TagDependency(['tags' => 'eav.value:' . $attr->id . '-' . $id]));
 
     }
 
