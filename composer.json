@@ -7,7 +7,6 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": ">=2.0.4",
         "nullref/yii2-useful": "dev-master",
-        "nullref/yii2-sb-admin-2": "dev-master",
         "nullref/yii2-core": "dev-master"
     },
     "require-dev": {
@@ -19,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "nullref\\admin\\": "src/"
+            "nullref\\eav\\": "src/"
         }
     },
     "extra": {
