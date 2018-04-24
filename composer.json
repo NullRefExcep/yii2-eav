@@ -13,12 +13,16 @@
     "require-dev": {
         "yiisoft/yii2-gii": "*"
     },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
     "autoload": {
         "psr-4": {
             "nullref\\admin\\": "src/"
         }
     },
     "extra": {
-        "bootstrap":"nullref\\admin\\Bootstrap"
+        "bootstrap":"nullref\\eav\\Bootstrap"
     }
 }
