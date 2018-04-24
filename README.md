@@ -5,7 +5,7 @@ Yii2 EAV
 
 WIP
 
-Module for entity attribute anti pattern
+Module for EAV (entity attribute value) anti pattern
 
 Installation
 ------------
