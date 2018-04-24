@@ -42,7 +42,7 @@ class Set extends ActiveRecord
      */
     public function getAttributeList()
     {
-        return $this->hasMany(Attribute::className(), ['set_id' => 'id'])->indexBy('code')->orderBy(['sort_order' => SORT_ASC]);
+        return $this->hasMany(Attribute::class, ['set_id' => 'id'])->indexBy('code')->orderBy(['sort_order' => SORT_ASC]);
     }
 
     /**

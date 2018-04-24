@@ -47,6 +47,10 @@ class Attributes extends Widget
                 case AttributeModel::TYPE_TEXT:
                     $fields[] = $field->textarea(ArrayHelper::remove($config, 'options', []));
                     break;
+                case AttributeModel::TYPE_JSON:
+                    $fields[] = $field->widget(ArrayHelper::remove($config, 'widget_class', MultipleInput::class),
+                        ArrayHelper::remove($config, 'widget_options', []));
+                    break;
                 default:
                     $fields[] = "$type is not supported";
             }

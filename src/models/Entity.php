@@ -13,10 +13,14 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\caching\TagDependency;
-use yii\db\ActiveRecord;
 use yii\db\Connection;
 use yii\db\Exception;
 
+/**
+ * Entity model implements all needed stuff to operate with dynamic attributes
+ *
+ * @package nullref\eav\models
+ */
 class Entity extends Model
 {
     /** @var Set[] */
@@ -28,27 +32,27 @@ class Entity extends Model
     /** @var array */
     public $_attributeModels = [];
 
-    /** @var ActiveRecord */
-    protected $owner;
+    /** Key of record */
+    protected $id;
 
-    /**
-     * @var
-     */
     protected $_attributesConfig = [];
     protected $_attributes = [];
 
+    /**
+     * Static field for caching sets of attributes
+     */
     protected static $_attributeSetCache = [];
 
     /**
      * @param $entity
-     * @param $owner
+     * @param $id
      * @return object
      * @throws InvalidConfigException
      */
-    public static function create($entity, $owner)
+    public static function create($entity, $id)
     {
         $model = Yii::createObject($entity);
-        $model->owner = $owner;
+        $model->id = $id;
 
         return $model;
     }
@@ -60,6 +64,7 @@ class Entity extends Model
     {
         parent::init();
         foreach ($this->sets as $set) {
+            /** Check cache */
             if (isset(self::$_attributeSetCache[$set->id])) {
                 $attributeList = self::$_attributeSetCache[$set->id];
             } else {
@@ -139,6 +144,9 @@ class Entity extends Model
     }
 
     /**
+     * Return value by attribute if it present
+     * otherwise call parent
+     *
      * @param string $name
      * @return mixed
      */
@@ -151,6 +159,9 @@ class Entity extends Model
     }
 
     /**
+     * Try to set value by attribute if it present
+     * otherwise call parent
+     *
      * @param string $name
      * @param mixed $value
      */
@@ -163,14 +174,14 @@ class Entity extends Model
     }
 
     /**
+     * Delete related values
+     *
      * @throws \Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
     public function delete()
     {
-        $id = $this->owner->primaryKey;
-
         foreach ($this->sets as $set) {
             foreach ($set->attributeList as $attribute) {
                 $valueClass = $attribute->getValueClass();
@@ -178,7 +189,7 @@ class Entity extends Model
                 /** @var ValueQuery $query */
                 $query = $valueClass::find();
 
-                $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $id])->one();
+                $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $this->id])->one();
                 if ($valueModel) {
                     $valueModel->delete();
                 }
@@ -187,26 +198,29 @@ class Entity extends Model
     }
 
     /**
+     * Save dynamic values of attributes
+     *
      * @throws Exception
      */
     public function save()
     {
         foreach ($this->_attributes as $code => $value) {
-            $this->setValue($code, $this->owner, $value);
+            $this->setValue($code, $value);
         }
     }
 
     /**
+     * Save value of attribute with cache invalidation
+     *
      * @param $attrCode
-     * @param $owner
      * @param $value
      * @throws Exception
      */
-    protected function setValue($attrCode, $owner, $value)
+    protected function setValue($attrCode, $value)
     {
         $attr = $this->getAttributeModel($attrCode);
 
-        $id = $owner->primaryKey;
+        $id = $this->id;
         $valueClass = $attr->getValueClass();
 
         /** @var ValueQuery $query */
@@ -215,8 +229,7 @@ class Entity extends Model
         $valueModel = $query->andWhere(['attribute_id' => $attr->id, 'entity_id' => $id])->one();
         if ($valueModel == null) {
             /** @var Value $valueModel */
-            $valueModel = new $valueClass();
-            $valueModel->attribute_id = $attr->id;
+            $valueModel = $attr->createValue();
             $valueModel->entity_id = $id;
         }
         $valueModel->value = $value;
@@ -235,24 +248,23 @@ class Entity extends Model
     {
         $list = [];
         foreach ($this->_attributes as $code => $v) {
-            $list[$code] = $this->getValue($code, $this->owner);
+            $list[$code] = $this->getValue($code);
         }
         $this->_attributes = $list;
     }
 
     /**
      * @param $attrCode
-     * @param $owner
      * @return mixed
      * @throws Exception
      * @throws \Exception
      * @throws \Throwable
      */
-    protected function getValue($attrCode, $owner)
+    protected function getValue($attrCode)
     {
         $attr = $this->getAttributeModel($attrCode);
 
-        $id = $owner->primaryKey;
+        $id = $this->id;
         $valueClass = $attr->getValueClass();
 
         /** @var Connection $db */

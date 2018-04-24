@@ -39,6 +39,7 @@ class Attribute extends ActiveRecord
     const TYPE_IMAGE = 'image';
     const TYPE_URL = 'url';
     const TYPE_TEXT = 'text';
+    const TYPE_JSON = 'json';
 
     protected $_optionsMap = null;
 
@@ -80,7 +81,7 @@ class Attribute extends ActiveRecord
      */
     public function getSet()
     {
-        return $this->hasOne(Set::className(), ['id' => 'set_id']);
+        return $this->hasOne(Set::class, ['id' => 'set_id']);
     }
 
     /**
@@ -129,11 +130,11 @@ class Attribute extends ActiveRecord
     }
 
     /**
-     * @return OptionQuery
+     * @return OptionQuery|\yii\db\ActiveQuery
      */
     public function getOptions()
     {
-        return $this->hasMany(Option::className(), ['attribute_id' => 'id']);
+        return $this->hasMany(Option::class, ['attribute_id' => 'id']);
     }
 
     /**
@@ -190,6 +191,7 @@ class Attribute extends ActiveRecord
         /** @var Value $model */
         $model = new $class;
 
+        $model->attribute_id = $this->id;
         $model->attributeModel = $this;
 
         return $model;

@@ -8,9 +8,9 @@
 namespace nullref\eav\helpers;
 
 
-use nullref\eav\models\Attribute;
-use nullref\eav\models\Entity;
-use nullref\eav\widgets\ActiveRangeInputGroup;
+use app\modules\eav\models\Attribute;
+use app\modules\eav\models\Entity;
+use app\modules\eav\widgets\ActiveRangeInputGroup;
 use kartik\select2\Select2;
 use mcms\xeditable\XEditableColumn;
 use yii\base\Model;
@@ -47,8 +47,8 @@ class Grid
                 continue;
             }
             $column = [
-                'attribute' => $code,
                 'label' => $item['name'],
+                'attribute' => $code,
             ];
             if (isset($item['config']['editable']) && $item['config']['editable']) {
                 $column = self::getEditableConfig($column, $item);
@@ -60,6 +60,56 @@ class Grid
         }
 
         return $result;
+    }
+
+    protected static function getEditableConfig($column, $item)
+    {
+        $column['class'] = XEditableColumn::class;
+        $column['editable'] = [];
+        $column['url'] = Url::to(['editable']);
+        $column['format'] = 'raw';
+
+        $column['dataType'] = 'text';
+
+        if (isset($item['items'])) {
+            $column['dataType'] = 'select';
+            $column['editable'] = [
+                'source' => $item['items']
+            ];
+        }
+        return $column;
+    }
+
+    public static function addFilter($column, $item, $searchModel)
+    {
+        if ($searchModel) {
+            if (isset($item['items'])) {
+                $column['filter'] = Select2::widget([
+                    'data' => $item['items'],
+                    'attribute' => $column['attribute'],
+                    'options' => ['placeholder' => ' '],
+                    'model' => $searchModel,
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                    ],
+                ]);
+            }
+            $column['headerOptions'] = [
+                'style' => 'min-width: 100px',
+            ];
+            if (in_array($item['type'], [Attribute::TYPE_INT, Attribute::TYPE_DECIMAL])) {
+
+                $column['filter'] = ActiveRangeInputGroup::widget([
+                    'attributeFrom' => $column['attribute'] . '[from]',
+                    'attributeTo' => $column['attribute'] . '[to]',
+                    'model' => $searchModel,
+                    'options' => [
+                        'style' => 'min-width: 100px',
+                    ],
+                ]);
+            }
+        }
+        return $column;
     }
 
     public static function addValue($column, $item)
@@ -124,56 +174,6 @@ class Grid
                 }
                 return '';
             };
-        }
-        return $column;
-    }
-
-    public static function addFilter($column, $item, $searchModel)
-    {
-        if ($searchModel) {
-            if (isset($item['items'])) {
-                $column['filter'] = Select2::widget([
-                    'data' => $item['items'],
-                    'attribute' => $column['attribute'],
-                    'options' => ['placeholder' => ' '],
-                    'model' => $searchModel,
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                    ],
-                ]);
-            }
-            $column['headerOptions'] = [
-                'style' => 'min-width: 100px',
-            ];
-            if (in_array($item['type'], [Attribute::TYPE_INT, Attribute::TYPE_DECIMAL])) {
-
-                $column['filter'] = ActiveRangeInputGroup::widget([
-                    'attributeFrom' => $column['attribute'] . '[from]',
-                    'attributeTo' => $column['attribute'] . '[to]',
-                    'model' => $searchModel,
-                    'options' => [
-                        'style' => 'min-width: 100px',
-                    ],
-                ]);
-            }
-        }
-        return $column;
-    }
-
-    protected static function getEditableConfig($column, $item)
-    {
-        $column['class'] = XEditableColumn::class;
-        $column['editable'] = [];
-        $column['url'] = Url::to(['editable']);
-        $column['format'] = 'raw';
-
-        $column['dataType'] = 'text';
-
-        if (isset($item['items'])) {
-            $column['dataType'] = 'select';
-            $column['editable'] = [
-                'source' => $item['items']
-            ];
         }
         return $column;
     }

@@ -10,9 +10,37 @@ namespace nullref\eav\behaviors;
 
 use nullref\eav\models\Entity as EntityModel;
 use yii\base\Behavior;
+use yii\base\InvalidValueException;
 use yii\db\ActiveRecord;
 use yii\validators\Validator;
 
+/**
+ * Entity behavior that allow to use dynamic attributes in model instance
+ *
+ * To use Entity behavior, insert the following code to your ActiveRecord class:
+ *
+ * ```php
+ * use nullref\eav\behaviors\Entity;
+ * use nullref\eav\models\Entity as EntityModel;
+ *
+ * public function behaviors()
+ * {
+ *     return [
+ *          'eav' => [
+ *              'class' => Entity::class,
+ *                  'entity' => function () {
+ *                      return new EntityModel([
+ *                      'sets' => [
+ *                          Set::findOne(['code' => 'catalog']),
+ *                      ],
+ *                  ]);
+ *              },
+ *          ],
+ *     ];
+ * }
+ *
+ * @package nullref\eav\behaviors
+ */
 class Entity extends Behavior
 {
     /** @var string */
@@ -35,7 +63,9 @@ class Entity extends Behavior
     }
 
     /**
-     *
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \yii\db\Exception
      */
     public function afterFind()
     {
@@ -43,7 +73,7 @@ class Entity extends Behavior
     }
 
     /**
-     *
+     * @throws \yii\db\Exception
      */
     public function afterSave()
     {
@@ -51,7 +81,9 @@ class Entity extends Behavior
     }
 
     /**
-     *
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function afterDelete()
     {
@@ -59,12 +91,19 @@ class Entity extends Behavior
     }
 
     /**
-     * @param ActiveRecord $owner
+     * Configure entity model and update validators for owner model
+     *
+     * @param \yii\base\Component|ActiveRecord $owner
+     * @throws \yii\base\InvalidConfigException
      */
     public function attach($owner)
     {
         parent::attach($owner);
-        $this->entityModel = EntityModel::create($this->entity, $owner);
+        $pk = $owner->primaryKey;
+        if (!is_scalar($pk)) {
+            throw new InvalidValueException('Entity primary key should be scalar');
+        }
+        $this->entityModel = EntityModel::create($this->entity, $pk);
 
         $validators = $owner->getValidators();
         $attributes = $this->entityModel->attributes();
@@ -74,6 +113,7 @@ class Entity extends Behavior
     /**
      * @param string $name
      * @return EntityModel|mixed
+     * @throws \yii\base\UnknownPropertyException
      */
     public function __get($name)
     {
@@ -90,7 +130,7 @@ class Entity extends Behavior
     /**
      * @param string $name
      * @param mixed $value
-     * @return mixed|void
+     * @throws \yii\base\UnknownPropertyException
      */
     public function __set($name, $value)
     {

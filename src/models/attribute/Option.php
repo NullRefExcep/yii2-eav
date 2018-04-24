@@ -44,7 +44,7 @@ class Option extends ActiveRecord
      */
     public function getAttributeRecord()
     {
-        return $this->hasOne(Attribute::className(), ['id' => 'attribute_id']);
+        return $this->hasOne(Attribute::class, ['id' => 'attribute_id']);
     }
 
     /**

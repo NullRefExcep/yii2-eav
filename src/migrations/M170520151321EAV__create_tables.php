@@ -24,13 +24,6 @@ class M170520151321EAV__create_tables extends Migration
             'set_id' => $this->integer(),
         ]);
 
-        //@TODO remove if it doesn't need
-        $this->createTable('{{%eav_entity_attribute}}', [
-            'attribute_id' => $this->primaryKey(),
-            'entity_id' => $this->integer(),
-            'sort_order' => $this->integer(),
-        ]);
-
         $this->createTable('{{%eav_attribute_option}}', [
             'id' => $this->primaryKey(),
             'attribute_id' => $this->integer(),
@@ -82,7 +75,6 @@ class M170520151321EAV__create_tables extends Migration
         $this->dropTable('{{%eav_entity_value_decimal}}');
         $this->dropTable('{{%eav_entity_value_int}}');
         $this->dropTable('{{%eav_attribute_option}}');
-        $this->dropTable('{{%eav_entity_attribute}}');
         $this->dropTable('{{%eav_attribute}}');
         $this->dropTable('{{%eav_attribute_set}}');
     }
