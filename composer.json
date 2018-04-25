@@ -5,16 +5,21 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": ">=2.0.4",
+        "kartik-v/yii2-widget-select2": "^2.1@dev",
+        "marciocamello/yii2-x-editable": "dev-master",
+        "nullref/yii2-core": "dev-master",
         "nullref/yii2-useful": "dev-master",
-        "nullref/yii2-core": "dev-master"
+        "yiisoft/yii2": ">=2.0.4"
     },
     "require-dev": {
         "yiisoft/yii2-gii": "*"
     },
     "config": {
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "fxp-asset": {
+            "enabled": false
+        }
     },
     "autoload": {
         "psr-4": {

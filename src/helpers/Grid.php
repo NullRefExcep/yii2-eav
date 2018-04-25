@@ -8,11 +8,11 @@
 namespace nullref\eav\helpers;
 
 
-use app\modules\eav\models\Attribute;
-use app\modules\eav\models\Entity;
-use app\modules\eav\widgets\ActiveRangeInputGroup;
 use kartik\select2\Select2;
 use mcms\xeditable\XEditableColumn;
+use nullref\core\widgets\ActiveRangeInputGroup;
+use nullref\eav\models\Attribute;
+use nullref\eav\models\Entity;
 use yii\base\Model;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
@@ -24,6 +24,7 @@ class Grid
      * @param Model $searchModel
      * @param string $property
      * @return array
+     * @throws \Exception
      */
     public static function getGridColumns(Model $searchModel, $property = 'eav')
     {
@@ -37,6 +38,7 @@ class Grid
      * @param Entity $entity
      * @param null $searchModel
      * @return array
+     * @throws \Exception
      */
     public static function getGridColumnsInternal(Entity $entity, $searchModel = null)
     {
@@ -80,6 +82,13 @@ class Grid
         return $column;
     }
 
+    /**
+     * @param $column
+     * @param $item
+     * @param $searchModel
+     * @return mixed
+     * @throws \Exception
+     */
     public static function addFilter($column, $item, $searchModel)
     {
         if ($searchModel) {

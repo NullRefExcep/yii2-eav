@@ -4,6 +4,7 @@
  * @copyright 2017 NRE
  *
  * @var array $fields
+ * @var string $itemWrapClass
  */
 ?>
 
