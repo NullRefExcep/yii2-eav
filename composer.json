@@ -9,7 +9,8 @@
         "marciocamello/yii2-x-editable": "dev-master",
         "nullref/yii2-core": "dev-master",
         "nullref/yii2-useful": "dev-master",
-        "yiisoft/yii2": ">=2.0.4"
+        "unclead/yii2-multiple-input": "~2.0",
+        "yiisoft/yii2": ">=2.0.13"
     },
     "require-dev": {
         "yiisoft/yii2-gii": "*"

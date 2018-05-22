@@ -37,4 +37,13 @@ class Formatter extends Behavior
         return isset(Attribute::getTypesMap()[$type]) ? Attribute::getTypesMap()[$type] : Yii::t('eav', 'N\A');
     }
 
+    /**
+     * @param $attribute
+     * @return string
+     */
+    public function asAttribute($attribute)
+    {
+        return isset(Attribute::getMap()[$attribute]) ? Attribute::getMap()[$attribute] : Yii::t('eav', 'N\A');
+    }
+
 }

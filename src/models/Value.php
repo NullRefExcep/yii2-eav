@@ -2,6 +2,8 @@
 
 namespace nullref\eav\models;
 
+use nullref\eav\models\value\DecimalValue;
+use nullref\eav\models\value\IntegerValue;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -62,7 +64,17 @@ class Value extends ActiveRecord
     public function addWhere($query, $table = false)
     {
         $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
-        $query->andWhere(["$table.value" => $this->value]);
+
+        if (is_array($this->value)) {
+            $condition = ['or'];
+            foreach ($this->value as $subvalue) {
+                $condition[] = ["$table.value" => $subvalue];
+            }
+            $query->andWhere($condition);
+        } else {
+            $query->andWhere(["$table.value" => $this->value]);
+        }
+        $this->addAttributeCondition($query, $table = false);
     }
 
     /**
@@ -102,14 +114,6 @@ class Value extends ActiveRecord
     }
 
     /**
-     * @param $value
-     */
-    public function setAttributeModel($value)
-    {
-        $this->_attributeModel = $value;
-    }
-
-    /**
      * @return Attribute
      */
     public function getAttributeModel()
@@ -118,6 +122,14 @@ class Value extends ActiveRecord
             $this->_attributeModel = $this->attributeModelRelation;
         }
         return $this->_attributeModel;
+    }
+
+    /**
+     * @param $value
+     */
+    public function setAttributeModel($value)
+    {
+        $this->_attributeModel = $value;
     }
 
     /**
@@ -134,5 +146,28 @@ class Value extends ActiveRecord
     public function getCacheKey()
     {
         return 'eav.value:' . $this->attribute_id . '-' . $this->entity_id;
+    }
+
+    /**
+     * Inline validator for array values for search scenario
+     *
+     * @see DecimalValue, IntegerValue
+     * @param $attribute
+     */
+    public function anyIsset($attribute)
+    {
+        if (!count(array_filter($this->$attribute))) {
+            $this->addError($attribute, 'Empty');
+        }
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @param string|bool $table
+     */
+    protected function addAttributeCondition($query, $table = false)
+    {
+        $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
+        $query->andWhere(["$table.attribute_id" => $this->attribute_id]);
     }
 }

@@ -8,11 +8,13 @@ use nullref\eav\models\attribute\Set;
 use nullref\eav\models\value\DecimalValue;
 use nullref\eav\models\value\ImageValue;
 use nullref\eav\models\value\IntegerValue;
+use nullref\eav\models\value\JsonValue;
 use nullref\eav\models\value\OptionValue;
 use nullref\eav\models\value\StringValue;
 use nullref\eav\models\value\TextValue;
 use nullref\eav\models\value\UrlValue;
 use nullref\useful\behaviors\JsonBehavior;
+use nullref\useful\traits\Mappable;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -31,6 +33,8 @@ use yii\db\ActiveRecord;
  */
 class Attribute extends ActiveRecord
 {
+    use Mappable;
+
     /** Types */
     const TYPE_INT = 'int';
     const TYPE_OPTION = 'option';
@@ -57,7 +61,8 @@ class Attribute extends ActiveRecord
      */
     public static function find()
     {
-        return new AttributeQuery(get_called_class());
+        $query = new AttributeQuery(get_called_class());
+        return $query->alias('attribute');
     }
 
     /**
@@ -73,6 +78,7 @@ class Attribute extends ActiveRecord
             self::TYPE_IMAGE => Yii::t('eav', 'Image'),
             self::TYPE_URL => Yii::t('eav', 'Url'),
             self::TYPE_TEXT => Yii::t('eav', 'Text'),
+            self::TYPE_JSON => Yii::t('eav', 'Json'),
         ];
     }
 
@@ -130,14 +136,6 @@ class Attribute extends ActiveRecord
     }
 
     /**
-     * @return OptionQuery|\yii\db\ActiveQuery
-     */
-    public function getOptions()
-    {
-        return $this->hasMany(Option::class, ['attribute_id' => 'id']);
-    }
-
-    /**
      * @return array|null
      */
     public function getOptionsMap()
@@ -149,11 +147,50 @@ class Attribute extends ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery | OptionQuery
+     */
+    public function getOptions()
+    {
+        return $this->hasMany(Option::class, ['attribute_id' => 'id']);
+    }
+
+    /**
      * @return bool
      */
     public function hasOptions()
     {
         return $this->type == self::TYPE_OPTION;
+    }
+
+    /**
+     * @return Value
+     */
+    public function createValue()
+    {
+        $class = $this->getValueClass();
+
+        /** @var Value $model */
+        $model = new $class;
+
+        $model->attribute_id = $this->id;
+        $model->attributeModel = $this;
+
+        return $model;
+    }
+
+    /**
+     * @return ValueQuery
+     */
+    public function createValueQuery()
+    {
+        $class = $this->getValueClass();
+
+        /** @var ValueQuery $query */
+        $query = call_user_func([$class, 'find']);
+
+        $query->andWhere(['attribute_id' => $this->id]);
+
+        return $query;
     }
 
     /**
@@ -176,24 +213,24 @@ class Attribute extends ActiveRecord
                 return UrlValue::class;
             case self::TYPE_TEXT:
                 return TextValue::class;
+            case self::TYPE_JSON:
+                return JsonValue::class;
             default:
                 return Value::class;
         }
     }
 
     /**
-     * @return Value
+     * @return bool
      */
-    public function createValue()
+    public function beforeDelete()
     {
-        $class = $this->getValueClass();
+        $valueClass = $this->getValueClass();
 
-        /** @var Value $model */
-        $model = new $class;
+        $valueClass::deleteAll(['attribute_id' => $this->id]);
 
-        $model->attribute_id = $this->id;
-        $model->attributeModel = $this;
-
-        return $model;
+        return parent::beforeDelete();
     }
+
+
 }

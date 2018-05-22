@@ -2,18 +2,18 @@
 
 namespace nullref\eav\controllers\admin;
 
-use nullref\core\interfaces\IAdminController;
-use nullref\eav\models\Attribute;
-use nullref\eav\models\AttributeSearch;
 use Yii;
-use yii\filters\VerbFilter;
+use nullref\eav\models\attribute\Option;
+use nullref\eav\models\attribute\OptionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use nullref\core\interfaces\IAdminController;
 
 /**
- * AttributeController implements the CRUD actions for Attribute model.
+ * OptionController implements the CRUD actions for Option model.
  */
-class AttributeController extends Controller implements IAdminController
+class OptionController extends Controller implements IAdminController
 {
     public function behaviors()
     {
@@ -28,12 +28,12 @@ class AttributeController extends Controller implements IAdminController
     }
 
     /**
-     * Lists all Attribute models.
+     * Lists all Option models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new AttributeSearch();
+        $searchModel = new OptionSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -43,10 +43,9 @@ class AttributeController extends Controller implements IAdminController
     }
 
     /**
-     * Displays a single Attribute model.
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
+     * Displays a single Option model.
+     * @param integer $id
+     * @return mixed
      */
     public function actionView($id)
     {
@@ -56,29 +55,13 @@ class AttributeController extends Controller implements IAdminController
     }
 
     /**
-     * Finds the Attribute model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Attribute the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Attribute::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
-
-    /**
-     * Creates a new Attribute model.
+     * Creates a new Option model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Attribute();
+        $model = new Option();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -90,11 +73,10 @@ class AttributeController extends Controller implements IAdminController
     }
 
     /**
-     * Updates an existing Attribute model.
+     * Updates an existing Option model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param $id
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException
+     * @param integer $id
+     * @return mixed
      */
     public function actionUpdate($id)
     {
@@ -110,20 +92,31 @@ class AttributeController extends Controller implements IAdminController
     }
 
     /**
-     * Deletes an existing Attribute model.
+     * Deletes an existing Option model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
-     * @param $id
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException
-     * @throws \Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @param integer $id
+     * @return mixed
      */
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Option model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Option the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Option::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
     }
 }

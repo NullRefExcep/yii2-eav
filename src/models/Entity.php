@@ -12,8 +12,7 @@ use nullref\eav\models\attribute\Set;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
-use yii\caching\TagDependency;
-use yii\db\Connection;
+use yii\db\ActiveRecord;
 use yii\db\Exception;
 
 /**
@@ -32,27 +31,30 @@ class Entity extends Model
     /** @var array */
     public $_attributeModels = [];
 
-    /** Key of record */
-    protected $id;
+    /** @var ActiveRecord */
+    protected $owner;
+
+    /** @var bool */
+    public $enableCache = true;
 
     protected $_attributesConfig = [];
     protected $_attributes = [];
 
     /**
-     * Static field for caching sets of attributes
+     * Static field for caching sets of attribute models
      */
     protected static $_attributeSetCache = [];
 
     /**
      * @param $entity
-     * @param $id
+     * @param $owner
      * @return object
      * @throws InvalidConfigException
      */
-    public static function create($entity, $id)
+    public static function create($entity, $owner)
     {
         $model = Yii::createObject($entity);
-        $model->id = $id;
+        $model->owner = $owner;
 
         return $model;
     }
@@ -64,7 +66,6 @@ class Entity extends Model
     {
         parent::init();
         foreach ($this->sets as $set) {
-            /** Check cache */
             if (isset(self::$_attributeSetCache[$set->id])) {
                 $attributeList = self::$_attributeSetCache[$set->id];
             } else {
@@ -144,9 +145,6 @@ class Entity extends Model
     }
 
     /**
-     * Return value by attribute if it present
-     * otherwise call parent
-     *
      * @param string $name
      * @return mixed
      */
@@ -159,9 +157,6 @@ class Entity extends Model
     }
 
     /**
-     * Try to set value by attribute if it present
-     * otherwise call parent
-     *
      * @param string $name
      * @param mixed $value
      */
@@ -174,14 +169,14 @@ class Entity extends Model
     }
 
     /**
-     * Delete related values
-     *
      * @throws \Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
     public function delete()
     {
+        $id = $this->owner->primaryKey;
+
         foreach ($this->sets as $set) {
             foreach ($set->attributeList as $attribute) {
                 $valueClass = $attribute->getValueClass();
@@ -189,7 +184,7 @@ class Entity extends Model
                 /** @var ValueQuery $query */
                 $query = $valueClass::find();
 
-                $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $this->id])->one();
+                $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $id])->one();
                 if ($valueModel) {
                     $valueModel->delete();
                 }
@@ -198,29 +193,26 @@ class Entity extends Model
     }
 
     /**
-     * Save dynamic values of attributes
-     *
      * @throws Exception
      */
     public function save()
     {
         foreach ($this->_attributes as $code => $value) {
-            $this->setValue($code, $value);
+            $this->setValue($code, $this->owner, $value);
         }
     }
 
     /**
-     * Save value of attribute with cache invalidation
-     *
      * @param $attrCode
+     * @param $owner
      * @param $value
      * @throws Exception
      */
-    protected function setValue($attrCode, $value)
+    protected function setValue($attrCode, $owner, $value)
     {
         $attr = $this->getAttributeModel($attrCode);
 
-        $id = $this->id;
+        $id = $owner->primaryKey;
         $valueClass = $attr->getValueClass();
 
         /** @var ValueQuery $query */
@@ -236,53 +228,9 @@ class Entity extends Model
         if ($valueModel->isNewRecord || $valueModel->isAttributeChanged('value', $this->identicalValueCompare)) {
             $valueModel->save();
         }
-        TagDependency::invalidate(Yii::$app->cache, $valueModel->getCacheKey());
-    }
-
-    /**
-     * @throws Exception
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    public function find()
-    {
-        $list = [];
-        foreach ($this->_attributes as $code => $v) {
-            $list[$code] = $this->getValue($code);
+        if ($this->enableCache) {
+            Yii::$app->cache->set($valueModel->getCacheKey(), $value);
         }
-        $this->_attributes = $list;
-    }
-
-    /**
-     * @param $attrCode
-     * @return mixed
-     * @throws Exception
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    protected function getValue($attrCode)
-    {
-        $attr = $this->getAttributeModel($attrCode);
-
-        $id = $this->id;
-        $valueClass = $attr->getValueClass();
-
-        /** @var Connection $db */
-        $db = $valueClass::getDb();
-        return $db->cache(function () use ($valueClass, $attr, $id) {
-            /** @var ValueQuery $query */
-            $query = $valueClass::find();
-            return $query->select('value')->andWhere(['attribute_id' => $attr->id, 'entity_id' => $id])->scalar();
-        }, null, new TagDependency(['tags' => 'eav.value:' . $attr->id . '-' . $id]));
-
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getAttributesConfig()
-    {
-        return $this->_attributesConfig;
     }
 
     /**
@@ -296,5 +244,77 @@ class Entity extends Model
             throw new Exception("Can't get attribute $name");
         }
         return $this->_attributeModels[$name];
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function find()
+    {
+        $list = [];
+        foreach ($this->_attributes as $code => $v) {
+            $list[$code] = $this->getValue($code, $this->owner);
+        }
+        $this->_attributes = $list;
+    }
+
+    /**
+     * @param $attrCode
+     * @param $owner
+     * @return mixed|null
+     * @throws Exception
+     */
+    protected function getValue($attrCode, $owner)
+    {
+        $attr = $this->getAttributeModel($attrCode);
+
+        $defaultValueModel = $attr->createValue();
+        $id = $owner->primaryKey;
+
+        $defaultValueModel->entity_id = $id;
+
+        if ($this->enableCache) {
+            $cacheKey = $defaultValueModel->getCacheKey();
+
+            $value = Yii::$app->cache->get($cacheKey);
+
+            if ($value === false) {
+
+                $value = $this->getValueInternal($defaultValueModel, $attr, $id);
+
+                if ($value !== false) {
+                    Yii::$app->cache->set($cacheKey, $value);
+                }
+            }
+
+            return $value;
+        }
+
+        return $this->getValueInternal($defaultValueModel, $attr, $id);
+    }
+
+    /**
+     * @param Value $defaultValueModel
+     * @param Attribute $attribute
+     * @param $id
+     * @return mixed|null
+     */
+    protected function getValueInternal(Value $defaultValueModel, Attribute $attribute, $id)
+    {
+        $query = $defaultValueModel::find();
+        $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $id])->one();
+        $value = $valueModel ? $valueModel->value : null;
+
+        return $value;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getAttributesConfig()
+    {
+        return $this->_attributesConfig;
     }
 }

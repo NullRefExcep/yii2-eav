@@ -18,6 +18,12 @@ use yii\db\ActiveQuery;
  * @property int $attribute_id
  * @property int $entity_id
  * @property mixed $value
+ *
+ *
+ * @property string $sku
+ *
+ * @property float $price
+ * @property float $weight
  */
 class StringValue extends Value
 {
@@ -44,6 +50,17 @@ class StringValue extends Value
     public function addWhere($query, $table = false)
     {
         $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
-        $query->andWhere(['like', "$table.value", $this->value]);
+
+        if (is_array($this->value)) {
+            $condition = ['or'];
+            foreach ($this->value as $subvalue) {
+                $condition[] = ['like', "$table.value", $subvalue];
+            }
+            $query->andWhere($condition);
+        } else {
+            $query->andWhere(['like', "$table.value", $this->value]);
+        }
+
+        $this->addAttributeCondition($query, $table);
     }
 }

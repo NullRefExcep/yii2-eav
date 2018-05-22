@@ -36,5 +36,6 @@ class OptionValue extends Value
     {
         $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
         $query->andWhere(['=', "$table.value", $this->value]);
+        $this->addAttributeCondition($query, $table);
     }
 }

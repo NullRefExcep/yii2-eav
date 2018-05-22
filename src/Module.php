@@ -39,6 +39,11 @@ class Module extends BaseModule implements IAdminModule
                     'url' => ['/eav/admin/attribute'],
                     'icon' => FA::_LIST,
                 ],
+                [
+                    'label' => Yii::t('eav', 'Options'),
+                    'url' => ['/eav/admin/option'],
+                    'icon' => FA::_LIST,
+                ],
             ],
         ];
     }

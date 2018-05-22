@@ -1,14 +1,14 @@
 <?php
 
-namespace nullref\eav\models;
+namespace nullref\eav\models\attribute;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * AttributeSearch represents the model behind the search form about `nullref\eav\models\Attribute`.
+ * OptionSearch represents the model behind the search form about `nullref\eav\models\attribute\Option`.
  */
-class AttributeSearch extends Attribute
+class OptionSearch extends Option
 {
     /**
      * @inheritdoc
@@ -16,8 +16,8 @@ class AttributeSearch extends Attribute
     public function rules()
     {
         return [
-            [['id', 'set_id'], 'integer'],
-            [['name', 'code', 'type'], 'safe'],
+            [['id', 'attribute_id', 'sort_order'], 'integer'],
+            [['value'], 'safe'],
         ];
     }
 
@@ -39,7 +39,7 @@ class AttributeSearch extends Attribute
      */
     public function search($params)
     {
-        $query = Attribute::find();
+        $query = Option::find();
 
         // add conditions that should always apply here
 
@@ -58,12 +58,11 @@ class AttributeSearch extends Attribute
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'set_id' => $this->set_id,
+            'attribute_id' => $this->attribute_id,
+            'sort_order' => $this->sort_order,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'code', $this->code])
-            ->andFilterWhere(['like', 'type', $this->type]);
+        $query->andFilterWhere(['like', 'value', $this->value]);
 
         return $dataProvider;
     }

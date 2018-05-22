@@ -14,7 +14,7 @@ use Yii;
 class Helper
 {
     /**
-     * @return \nullref\eav\Module|\yii\base\Module
+     * @return null|\yii\base\Module|\nullref\eav\Module
      */
     public static function getModule()
     {

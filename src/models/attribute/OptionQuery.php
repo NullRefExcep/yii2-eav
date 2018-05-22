@@ -2,7 +2,7 @@
 
 namespace nullref\eav\models\attribute;
 
-use app\traits\MappableQuery;
+use nullref\useful\traits\MappableQuery;
 use yii\db\ActiveQuery;
 
 /**
@@ -13,6 +13,7 @@ use yii\db\ActiveQuery;
 class OptionQuery extends ActiveQuery
 {
     use MappableQuery;
+
     /**
      * @inheritdoc
      * @return Option[]|array

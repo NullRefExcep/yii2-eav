@@ -2,17 +2,18 @@
 
 namespace nullref\eav\models;
 
+use nullref\eav\models\attribute\Option;
+use nullref\useful\traits\MappableQuery;
+use yii\db\ActiveQuery as BaseActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[Attribute]].
  *
  * @see Attribute
  */
-class AttributeQuery extends \yii\db\ActiveQuery
+class AttributeQuery extends BaseActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
+    use MappableQuery;
 
     /**
      * @inheritdoc
@@ -30,5 +31,13 @@ class AttributeQuery extends \yii\db\ActiveQuery
     public function one($db = null)
     {
         return parent::one($db);
+    }
+
+    /**
+     * @return $this
+     */
+    public function withOptions()
+    {
+        return $this->rightJoin(['options' => Option::tableName()], 'options.attribute_id = attribute.id');
     }
 }

@@ -24,8 +24,9 @@ class IntegerValue extends Value
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'value' => ['value', 'filter', 'filter' => 'floatval', 'on' => self::SCENARIO_DEFAULT],
-            'search_value' => ['value', 'each', 'rule' => ['number'], 'on' => 'search'],
+            'value' => ['value', 'filter', 'filter' => 'intval', 'on' => self::SCENARIO_DEFAULT],
+            'search_value_is_number' => ['value', 'each', 'rule' => ['number'], 'on' => self::SCENARIO_SEARCH],
+            'search_value_isset' => ['value', 'anyIsset', 'on' => self::SCENARIO_SEARCH],
         ]);
     }
 
@@ -37,10 +38,15 @@ class IntegerValue extends Value
     {
         $table = $table ? $table : self::JOIN_TABLE_PREFIX . $this->attributeModel->code;
 
+        $needAddCondition = false;
         foreach (['from' => '>=', 'to' => '<='] as $key => $operator) {
             if (isset($this->value[$key]) && $this->value[$key] !== '') {
                 $query->andFilterWhere([$operator, "$table.value", intval($this->value[$key])]);
+                $needAddCondition = true;
             }
+        }
+        if ($needAddCondition) {
+            $this->addAttributeCondition($query, $table);
         }
     }
 }

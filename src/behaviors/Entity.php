@@ -10,7 +10,6 @@ namespace nullref\eav\behaviors;
 
 use nullref\eav\models\Entity as EntityModel;
 use yii\base\Behavior;
-use yii\base\InvalidValueException;
 use yii\db\ActiveRecord;
 use yii\validators\Validator;
 
@@ -91,19 +90,13 @@ class Entity extends Behavior
     }
 
     /**
-     * Configure entity model and update validators for owner model
-     *
      * @param \yii\base\Component|ActiveRecord $owner
      * @throws \yii\base\InvalidConfigException
      */
     public function attach($owner)
     {
         parent::attach($owner);
-        $pk = $owner->primaryKey;
-        if (!is_scalar($pk)) {
-            throw new InvalidValueException('Entity primary key should be scalar');
-        }
-        $this->entityModel = EntityModel::create($this->entity, $pk);
+        $this->entityModel = EntityModel::create($this->entity, $owner);
 
         $validators = $owner->getValidators();
         $attributes = $this->entityModel->attributes();
@@ -113,7 +106,6 @@ class Entity extends Behavior
     /**
      * @param string $name
      * @return EntityModel|mixed
-     * @throws \yii\base\UnknownPropertyException
      */
     public function __get($name)
     {

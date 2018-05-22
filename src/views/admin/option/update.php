@@ -3,16 +3,16 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model nullref\eav\models\Attribute */
+/* @var $model nullref\eav\models\attribute\Option */
 
 $this->title = Yii::t('eav', 'Update {modelClass}: ', [
-        'modelClass' => 'Attribute',
-    ]) . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('eav', 'Attributes'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+    'modelClass' => 'Option',
+]) . ' ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('eav', 'Options'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('eav', 'Update');
 ?>
-<div class="attribute-update">
+<div class="option-update">
 
     <div class="row">
         <div class="col-lg-12">

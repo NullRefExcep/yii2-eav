@@ -8,9 +8,9 @@
 namespace nullref\eav\helpers;
 
 
-use app\modules\eav\models\Attribute;
-use app\modules\eav\models\attribute\Option;
-use app\modules\eav\models\attribute\Set;
+use nullref\eav\models\Attribute;
+use nullref\eav\models\attribute\Option;
+use nullref\eav\models\attribute\Set;
 
 class Migration
 {

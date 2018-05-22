@@ -64,6 +64,11 @@ class Grid
         return $result;
     }
 
+    /**
+     * @param $column
+     * @param $item
+     * @return mixed
+     */
     protected static function getEditableConfig($column, $item)
     {
         $column['class'] = XEditableColumn::class;
@@ -121,6 +126,11 @@ class Grid
         return $column;
     }
 
+    /**
+     * @param $column
+     * @param $item
+     * @return mixed
+     */
     public static function addValue($column, $item)
     {
         if (isset($item['items'])) {

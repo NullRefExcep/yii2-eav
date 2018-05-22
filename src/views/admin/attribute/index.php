@@ -2,8 +2,8 @@
 
 use nullref\eav\models\Attribute;
 use nullref\eav\models\attribute\Set;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel nullref\eav\models\AttributeSearch */
