@@ -30,7 +30,6 @@ Then You have run console command for install this module and run migrations:
 
 ```
 php yii module/install nullref/yii2-eav
-php yii modules-migrate
 ```
 
 Pay attention that if you don't use our [application template](https://github.com/NullRefExcep/yii2-boilerplate) 
