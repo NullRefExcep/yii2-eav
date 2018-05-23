@@ -93,5 +93,55 @@ public function afterFind()
 
 In above example we have many-to-many relation product model with category which has set_id column.
 
+Using in search model 
+---------------------
+
+If you need filtering your records by eav fields you need to modify `YourModelSearch::search()` method by following code:
+
+```php
+    //...
+    if (!$this->validate()) {
+        return $dataProvider;
+    }
+    //...
+    foreach ($this->eav->getAttributes() as $key => $value) {
+
+        $valueModel = $this->eav->getAttributeModel($key)->createValue();
+
+        $valueModel->setScenario('search');
+        $valueModel->load(['value' => $value], '');
+        if ($valueModel->validate(['value'])) {
+            $valueModel->addJoin($query, Product::tableName());
+            $valueModel->addWhere($query);
+        }
+    }
+    //...
+    return $dataProvider;
+```
+
+To output columns in gridview use `nullref\eav\helpers\Grid::getGridColumns()`:
+
+```php
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'filterModel' => $searchModel,
+    'columns' => array_merge([
+    //... 
+        'name',
+    ], nullref\eav\helpers\Grid::getGridColumns($searchModel), [
+    //... 
+        [
+            'class' => 'yii\grid\ActionColumn',
+        ],
+    ]),
+]); ?>
+```
+
+To configure which columns will be shown in grid go to attribute update page and select "Show on grid" checkbox.
+
+
+Translations
+------------
+
 And [translations](https://github.com/NullRefExcep/yii2-core#translation-overriding)
 
