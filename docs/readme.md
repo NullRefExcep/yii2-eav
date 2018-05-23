@@ -1,6 +1,12 @@
 Documentation
 -------------
 
+Demo
+====
+
+![](https://raw.githubusercontent.com/NullRefExcep/yii2-eav/master/docs/assets/demo.gif)
+
+
 Screenshots
 ===========
 

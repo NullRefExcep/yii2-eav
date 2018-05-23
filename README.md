@@ -66,7 +66,7 @@ Create set and attribute for it in admin panel
 Add attributes widget to entity edit form
 
 ```php
-<?= app\modules\eav\widgets\Attributes::widget([
+<?= \nullref\eav\widgets\Attributes::widget([
     'form' => $form,
     'model' => $model,
 ]) ?>
