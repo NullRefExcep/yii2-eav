@@ -72,5 +72,26 @@ Add attributes widget to entity edit form
 ]) ?>
 ```
 
+If you need some dynamic configuration sets of your model you can use method `afterFind()`:
+
+```php
+public function afterFind()
+{
+    $this->attachBehavior('eav', [
+        'class' => Entity::class,
+        'entity' => function () {
+            $setIds = $this->getCategories()->select('set_id')->column();
+            $setIds[] = Set::findOne(['code' => 'product'])->id;
+            return new EntityModel([
+                'sets' => Set::findAll(['id' => array_unique($setIds)]),
+            ]);
+        },
+    ]);
+    parent::afterFind();
+}
+```
+
+In above example we have many-to-many relation product model with category which has set_id column.
+
 And [translations](https://github.com/NullRefExcep/yii2-core#translation-overriding)
 
