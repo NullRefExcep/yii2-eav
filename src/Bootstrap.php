@@ -8,10 +8,10 @@
 namespace nullref\eav;
 
 
-use nullref\core\components\i18n\PhpMessageSource;
 use nullref\eav\behaviors\Formatter;
 use yii\base\Application;
 use yii\base\BootstrapInterface;
+use yii\i18n\PhpMessageSource;
 
 class Bootstrap implements BootstrapInterface
 {
