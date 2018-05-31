@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'sort_order')->textInput() ?>
 
-    <?= $form->field($model, 'value')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'value')->textarea() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('eav', 'Create') : Yii::t('eav', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
