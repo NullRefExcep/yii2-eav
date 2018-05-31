@@ -1,10 +1,13 @@
 <?php
 
+use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model nullref\eav\models\Attribute */
+/* @var $optionSearchModel nullref\eav\models\attribute\OptionSearch */
+/* @var $optionsDataProvider \yii\data\ActiveDataProvider */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('eav', 'Attributes'), 'url' => ['index']];
@@ -42,5 +45,28 @@ $this->params['breadcrumbs'][] = $this->title;
             'set_id:set',
         ],
     ]) ?>
+
+    <?php if ($model->hasOptions()): ?>
+
+        <p>
+            <?= Html::a(Yii::t('eav', 'Create Option'), ['/eav/admin/option/create', 'attribute_id' => $model->id], ['class' => 'btn btn-success']) ?>
+        </p>
+
+        <?= GridView::widget([
+            'dataProvider' => $optionsDataProvider,
+            'filterModel' => $optionSearchModel,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+
+                'sort_order',
+                'value',
+
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'controller' => '/eav/admin/option',
+                ],
+            ],
+        ]); ?>
+    <?php endif ?>
 
 </div>

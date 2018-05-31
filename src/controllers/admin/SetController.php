@@ -50,6 +50,8 @@ class SetController extends Controller implements IAdminController
      */
     public function actionView($id)
     {
+        //@TODO add stuff for attribute grid
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);

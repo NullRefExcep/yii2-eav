@@ -2,13 +2,13 @@
 
 namespace nullref\eav\controllers\admin;
 
-use Yii;
+use nullref\core\interfaces\IAdminController;
 use nullref\eav\models\attribute\Option;
 use nullref\eav\models\attribute\OptionSearch;
+use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use nullref\core\interfaces\IAdminController;
 
 /**
  * OptionController implements the CRUD actions for Option model.
@@ -55,13 +55,33 @@ class OptionController extends Controller implements IAdminController
     }
 
     /**
+     * Finds the Option model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Option the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Option::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
      * Creates a new Option model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($attribute_id = false)
     {
         $model = new Option();
+
+        if ($attribute_id) {
+            $model->attribute_id = intval($attribute_id);
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -83,7 +103,7 @@ class OptionController extends Controller implements IAdminController
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(Yii::$app->request->referrer ?? ['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -101,22 +121,6 @@ class OptionController extends Controller implements IAdminController
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Option model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Option the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Option::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
+        return $this->redirect(Yii::$app->request->referrer ?? ['index']);
     }
 }

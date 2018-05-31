@@ -4,6 +4,7 @@ namespace nullref\eav\controllers\admin;
 
 use nullref\core\interfaces\IAdminController;
 use nullref\eav\models\Attribute;
+use nullref\eav\models\attribute\OptionSearch;
 use nullref\eav\models\AttributeSearch;
 use Yii;
 use yii\filters\VerbFilter;
@@ -50,8 +51,13 @@ class AttributeController extends Controller implements IAdminController
      */
     public function actionView($id)
     {
+        $optionSearchModel = new OptionSearch();
+        $optionSearchModel->attribute_id = $id;
+        $optionsDataProvider = $optionSearchModel->search(Yii::$app->request->queryParams);
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'optionSearchModel' => $optionSearchModel,
+            'optionsDataProvider' => $optionsDataProvider,
         ]);
     }
 
