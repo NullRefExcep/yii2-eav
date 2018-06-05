@@ -93,6 +93,16 @@ public function afterFind()
 
 In above example we have many-to-many relation product model with category which has set_id column.
 
+Pay attention that this example could caused n+1 query problem. To prevent this problem use query caching or memoization.
+For example, change:
+```php
+\nullref\eav\models\attribute\Set::findOne(['code' => 'product']),
+```
+to
+```php
+\nullref\useful\helpers\Memoize::call([Set::class, 'findOne'],[['code' => 'product']]),
+```
+
 Using in search model 
 ---------------------
 

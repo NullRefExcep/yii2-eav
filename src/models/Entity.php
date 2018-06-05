@@ -250,6 +250,7 @@ class Entity extends Model
      * @throws Exception
      * @throws \Exception
      * @throws \Throwable
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function find()
     {
@@ -265,6 +266,7 @@ class Entity extends Model
      * @param $owner
      * @return mixed|null
      * @throws Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     protected function getValue($attrCode, $owner)
     {
