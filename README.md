@@ -43,6 +43,10 @@ Setup
 Add behavior to target model
 
 ```php
+use nullref\eav\behaviors\Entity;
+use nullref\eav\models\attribute\Set;
+use nullref\eav\models\Entity as EntityModel;
+
 public function behaviors()
 {
     return [
