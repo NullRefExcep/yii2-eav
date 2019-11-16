@@ -47,21 +47,30 @@ use nullref\eav\behaviors\Entity;
 use nullref\eav\models\attribute\Set;
 use nullref\eav\models\Entity as EntityModel;
 
-public function behaviors()
-{
-    return [
-        /** ... **/
-        'eav' => [
-            'class' => Entity::class,
-            'entity' => function () {
-                return new EntityModel([
-                    'sets' => [
-                        Set::findOne(['code' => 'product']), //product -- set from db
-                    ],
-                ]);
-            },
-        ],
-    ];
+/**
+ * ...
+ * @property EntityModel $eav
+ * ...
+ */
+class Product extends \yii\db\ActiveRecord
+    //...
+    public function behaviors()
+    {
+        return [
+            /** ... **/
+            'eav' => [
+                'class' => Entity::class,
+                'entity' => function () {
+                    return new EntityModel([
+                        'sets' => [
+                            Set::findOne(['code' => 'product']), //product -- set from db
+                        ],
+                    ]);
+                },
+            ],
+        ];
+    }
+    //...
 }
 ```
 
@@ -125,7 +134,7 @@ If you need filtering your records by eav fields you need to modify `YourModelSe
         $valueModel->setScenario('search');
         $valueModel->load(['value' => $value], '');
         if ($valueModel->validate(['value'])) {
-            $valueModel->addJoin($query, Product::tableName());
+            $valueModel->addJoin($query, self::tableName());
             $valueModel->addWhere($query);
         }
     }
@@ -142,7 +151,7 @@ To output columns in gridview use `nullref\eav\helpers\Grid::getGridColumns()`:
     'columns' => array_merge([
     //... 
         'name',
-    ], nullref\eav\helpers\Grid::getGridColumns($searchModel), [
+    ], \nullref\eav\helpers\Grid::getGridColumns($searchModel), [
     //... 
         [
             'class' => 'yii\grid\ActionColumn',
