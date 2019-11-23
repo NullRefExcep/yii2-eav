@@ -94,7 +94,7 @@ class Entity extends Model
     {
         $attr = $attribute->attributes;
         if ($attribute->hasOptions()) {
-            $attr['items'] = $attribute->getOptionsMap();
+            $attr['items'] = $attribute->getOptionsMap() ?? [];
         }
         return $attr;
     }
