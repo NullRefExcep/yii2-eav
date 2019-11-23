@@ -13,6 +13,7 @@ use mcms\xeditable\XEditableColumn;
 use nullref\core\widgets\ActiveRangeInputGroup;
 use nullref\eav\models\Attribute;
 use nullref\eav\models\Entity;
+use nullref\eav\models\Types;
 use yii\base\Model;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
@@ -111,7 +112,7 @@ class Grid
             $column['headerOptions'] = [
                 'style' => 'min-width: 100px',
             ];
-            if (in_array($item['type'], [Attribute::TYPE_INT, Attribute::TYPE_DECIMAL])) {
+            if (in_array($item['type'], [Types::TYPE_INT, Types::TYPE_DECIMAL])) {
 
                 $column['filter'] = ActiveRangeInputGroup::widget([
                     'attributeFrom' => $column['attribute'] . '[from]',
