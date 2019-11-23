@@ -14,6 +14,11 @@ use yii\base\Widget;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveField;
 
+/**
+ * Class Attribute
+ * @deprecated
+ * @package nullref\eav\widgets
+ */
 class Attribute extends Widget
 {
     /** @var mixed */

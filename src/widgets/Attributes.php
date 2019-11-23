@@ -8,6 +8,7 @@
 namespace nullref\eav\widgets;
 
 
+use nullref\eav\components\Manager;
 use yii\base\Widget;
 use yii\widgets\ActiveForm;
 
@@ -30,7 +31,8 @@ class Attributes extends Widget
         $fields = [];
         foreach ($this->model->eav->getAttributesConfig() as $attribute => $config) {
             $field = $this->form->field($this->model, $attribute);
-            $widget = new Attribute([
+            $inputClass =  Manager::get()->getType($config['type'])->getInputClass();
+            $widget = new $inputClass([
                 'config' => $config,
                 'field' => $field,
             ]);

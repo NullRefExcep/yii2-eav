@@ -2,6 +2,7 @@
 
 namespace nullref\eav\models;
 
+use nullref\eav\components\Manager;
 use nullref\eav\models\attribute\Option;
 use nullref\eav\models\attribute\OptionQuery;
 use nullref\eav\models\attribute\Set;
@@ -13,6 +14,9 @@ use nullref\eav\models\value\OptionValue;
 use nullref\eav\models\value\StringValue;
 use nullref\eav\models\value\TextValue;
 use nullref\eav\models\value\UrlValue;
+use nullref\eav\widgets\inputs\DefaultInput;
+use nullref\eav\widgets\inputs\OptionInput;
+use nullref\eav\widgets\inputs\TextInput;
 use nullref\useful\behaviors\JsonBehavior;
 use nullref\useful\traits\Mappable;
 use Yii;
@@ -35,16 +39,6 @@ class Attribute extends ActiveRecord
 {
     use Mappable;
 
-    /** Types */
-    const TYPE_INT = 'int';
-    const TYPE_OPTION = 'option';
-    const TYPE_DECIMAL = 'decimal';
-    const TYPE_STRING = 'string';
-    const TYPE_IMAGE = 'image';
-    const TYPE_URL = 'url';
-    const TYPE_TEXT = 'text';
-    const TYPE_JSON = 'json';
-
     protected $_optionsMap = null;
 
     /**
@@ -65,21 +59,13 @@ class Attribute extends ActiveRecord
         return $query->alias('attribute');
     }
 
+
     /**
      * @return array
      */
     public static function getTypesMap()
     {
-        return [
-            self::TYPE_OPTION => Yii::t('eav', 'Option'),
-            self::TYPE_INT => Yii::t('eav', 'Integer'),
-            self::TYPE_DECIMAL => Yii::t('eav', 'Decimal'),
-            self::TYPE_STRING => Yii::t('eav', 'String'),
-            self::TYPE_IMAGE => Yii::t('eav', 'Image'),
-            self::TYPE_URL => Yii::t('eav', 'Url'),
-            self::TYPE_TEXT => Yii::t('eav', 'Text'),
-            self::TYPE_JSON => Yii::t('eav', 'Json'),
-        ];
+        return Manager::get()->getTypesMap();
     }
 
     /**
@@ -159,7 +145,7 @@ class Attribute extends ActiveRecord
      */
     public function hasOptions()
     {
-        return $this->type == self::TYPE_OPTION;
+        return Manager::get()->getType($this->type)->hasOptions();
     }
 
     /**
@@ -198,26 +184,7 @@ class Attribute extends ActiveRecord
      */
     public function getValueClass()
     {
-        switch ($this->type) {
-            case self::TYPE_INT:
-                return IntegerValue::class;
-            case self::TYPE_OPTION:
-                return OptionValue::class;
-            case self::TYPE_DECIMAL:
-                return DecimalValue::class;
-            case self::TYPE_STRING:
-                return StringValue::class;
-            case self::TYPE_IMAGE:
-                return ImageValue::class;
-            case self::TYPE_URL:
-                return UrlValue::class;
-            case self::TYPE_TEXT:
-                return TextValue::class;
-            case self::TYPE_JSON:
-                return JsonValue::class;
-            default:
-                return Value::class;
-        }
+        return Manager::get()->getType($this->type)->getValueClass();
     }
 
     /**
@@ -231,6 +198,4 @@ class Attribute extends ActiveRecord
 
         return parent::beforeDelete();
     }
-
-
 }

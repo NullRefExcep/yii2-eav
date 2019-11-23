@@ -4,6 +4,16 @@ namespace nullref\eav;
 
 use nullref\core\interfaces\IAdminModule;
 use nullref\core\interfaces\IHasMigrateNamespace;
+use nullref\eav\components\Manager;
+use nullref\eav\models\Type;
+use nullref\eav\models\value\IntegerValue;
+use nullref\eav\models\value\JsonValue;
+use nullref\eav\models\value\OptionValue;
+use nullref\eav\models\value\StringValue;
+use nullref\eav\models\value\TextValue;
+use nullref\eav\widgets\inputs\DefaultInput;
+use nullref\eav\widgets\inputs\OptionInput;
+use nullref\eav\widgets\inputs\TextInput;
 use rmrevin\yii\fontawesome\FA;
 use Yii;
 use yii\base\Module as BaseModule;
@@ -49,6 +59,18 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
         ];
     }
 
+    protected $manager;
+
+    /**
+     * @return Manager
+     */
+    public function getManager()
+    {
+        if ($this->manager == null) {
+            $this->manager = new Manager();
+        }
+        return $this->manager;
+    }
 
     /**
      * Return path to folder with migration with namespaces
