@@ -13,7 +13,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'attribute_id')->dropDownList(Attribute::find()->withOptions()->getMap()) ?>
+    <?= $form->field($model, 'attribute_id')->dropDownList(Attribute::find()
+        ->andWhere(['type' => Attribute::TYPE_OPTION])->getMap()) ?>
 
     <?= $form->field($model, 'sort_order')->textInput() ?>
 
