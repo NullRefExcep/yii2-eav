@@ -12,6 +12,7 @@ use nullref\eav\behaviors\Formatter;
 use nullref\eav\components\Manager;
 use nullref\eav\models\Type;
 use nullref\eav\models\Types;
+use nullref\eav\models\TypeWithOptions;
 use nullref\eav\models\value\DecimalValue;
 use nullref\eav\models\value\IntegerValue;
 use nullref\eav\models\value\JsonValue;
@@ -76,7 +77,7 @@ class Bootstrap implements BootstrapInterface
         $manager->registerType(new Type(Types::TYPE_JSON, Yii::t('eav', 'JSON'),
             JsonValue::class, MultilineInput::class));
         // Option
-        $manager->registerType(new Type(Types::TYPE_OPTION, Yii::t('eav', 'Option'),
+        $manager->registerType(new TypeWithOptions(Types::TYPE_OPTION, Yii::t('eav', 'Option'),
             OptionValue::class, OptionInput::class));
     }
 }
