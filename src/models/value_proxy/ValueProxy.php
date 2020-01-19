@@ -131,6 +131,14 @@ abstract class ValueProxy extends Model
     }
 
     /**
+     * @param mixed $entityId
+     */
+    public function setEntityId($entityId)
+    {
+        $this->_entityId = $entityId;
+    }
+
+    /**
      * Proxy save logic to concrete value model(s)
      */
     public abstract function save();

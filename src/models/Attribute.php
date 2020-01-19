@@ -142,9 +142,10 @@ class Attribute extends ActiveRecord
     }
 
     /**
+     * @param null $entityId
      * @return ValueProxy
      */
-    public function createValue()
+    public function createValue($entityId = null)
     {
         $valueClass = $this->getValueClass();
 
@@ -154,6 +155,10 @@ class Attribute extends ActiveRecord
 
         /** @var ValueProxy $model */
         $model = new $proxyValueClass($valueClass, $this);
+
+        if ($entityId) {
+            $model->setEntityId($entityId);
+        }
 
         return $model;
     }
