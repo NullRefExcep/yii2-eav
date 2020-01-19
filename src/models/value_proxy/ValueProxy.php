@@ -145,6 +145,8 @@ abstract class ValueProxy extends Model
 
     /**
      * Get instance with values for particular entity
+     *
+     * @param $entityId
      * @return $this
      */
     public function get($entityId)

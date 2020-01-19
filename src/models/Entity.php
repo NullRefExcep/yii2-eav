@@ -258,8 +258,8 @@ class Entity extends Model
     {
         $attr = $this->getAttributeModel($attrCode);
 
-        $defaultValueModel = $attr->createValue();
         $id = $owner->primaryKey;
+        $defaultValueModel = $attr->createValue($id);
 
         if ($this->enableCache) {
             $cacheKey = $defaultValueModel->getCacheKey();
