@@ -20,6 +20,31 @@ use yii\db\ActiveRecord;
  */
 abstract class ValueProxy extends Model
 {
+    /** @var mixed */
+    protected $_entityId;
+    /** @var Attribute */
+    protected $_attributeModel;
+    /** @var string */
+    protected $_valueClass;
+    /** @var Value|null */
+    protected $_defaultValueInstance;
+
+    /**
+     * ValueProxy constructor.
+     * Initalize based on concrete value class
+     * and attribute model
+     *
+     * @param $valueClass
+     * @param $attributeModel
+     * @param array $config
+     */
+    public function __construct($valueClass, $attributeModel, $config = [])
+    {
+        $this->_valueClass = $valueClass;
+        $this->_attributeModel = $attributeModel;
+        parent::__construct($config);
+    }
+
     /**
      * @param $query
      * @param $entityTable
@@ -48,42 +73,6 @@ abstract class ValueProxy extends Model
             return $acc;
         }, []);
     }
-
-    /**
-     * @return array
-     */
-    public function scenarios()
-    {
-        return $this->getDefaultValueInstance()->scenarios();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return $this->getDefaultValueInstance()->attributeLabels();
-    }
-
-    /**
-     * @return string
-     */
-    public function getCacheKey()
-    {
-        return 'eav.value:' . $this->_attributeModel->id . '-' . $this->_entityId;
-    }
-
-    /** @var mixed */
-    protected $_entityId;
-
-    /** @var Attribute */
-    protected $_attributeModel;
-
-    /** @var string */
-    protected $_valueClass;
-
-    /** @var Value|null */
-    protected $_defaultValueInstance;
 
     /**
      * @return mixed|Value|null
@@ -118,19 +107,27 @@ abstract class ValueProxy extends Model
     }
 
     /**
-     * ValueProxy constructor.
-     * Initalize based on concrete value class
-     * and attribute model
-     *
-     * @param $valueClass
-     * @param $attributeModel
-     * @param array $config
+     * @return array
      */
-    public function __construct($valueClass, $attributeModel, $config = [])
+    public function scenarios()
     {
-        $this->_valueClass = $valueClass;
-        $this->_attributeModel = $attributeModel;
-        parent::__construct($config);
+        return $this->getDefaultValueInstance()->scenarios();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return $this->getDefaultValueInstance()->attributeLabels();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheKey()
+    {
+        return 'eav.value:' . $this->_attributeModel->id . '-' . $this->_entityId;
     }
 
     /**
@@ -158,6 +155,20 @@ abstract class ValueProxy extends Model
                 ['attribute_id' => $this->_attributeModel->id, 'entity_id' => $this->_entityId]
             );
         }
+    }
+
+    /**
+     * Inline validator for array values for search scenario
+     *
+     * @param $attribute
+     * @see DecimalValue, IntegerValue
+     */
+    public function anyIsset($attribute)
+    {
+        if (!count(array_filter($this->$attribute))) {
+            $this->addError($attribute, 'Empty');
+        }
+
     }
 
     /**
