@@ -9,6 +9,7 @@ namespace nullref\eav\models;
 
 
 use nullref\eav\models\attribute\Set;
+use nullref\eav\models\value_proxy\ValueProxy;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
@@ -28,7 +29,7 @@ class Entity extends Model
     /** @var bool */
     public $identicalValueCompare = false;
 
-    /** @var array */
+    /** @var Attribute[] */
     public $_attributeModels = [];
 
     /** @var ActiveRecord */
@@ -179,15 +180,10 @@ class Entity extends Model
 
         foreach ($this->sets as $set) {
             foreach ($set->attributeList as $attribute) {
-                $valueClass = $attribute->getValueClass();
 
-                /** @var ValueQuery $query */
-                $query = $valueClass::find();
+                $valueModel = $attribute->createValue();
 
-                $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $id])->one();
-                if ($valueModel) {
-                    $valueModel->delete();
-                }
+                $valueModel->get($id)->delete();
             }
         }
     }
@@ -213,21 +209,11 @@ class Entity extends Model
         $attr = $this->getAttributeModel($attrCode);
 
         $id = $owner->primaryKey;
-        $valueClass = $attr->getValueClass();
 
-        /** @var ValueQuery $query */
-        $query = $valueClass::find();
+        $valueModel = $attr->createValue();
 
-        $valueModel = $query->andWhere(['attribute_id' => $attr->id, 'entity_id' => $id])->one();
-        if ($valueModel == null) {
-            /** @var Value $valueModel */
-            $valueModel = $attr->createValue();
-            $valueModel->entity_id = $id;
-        }
-        $valueModel->value = $value;
-        if ($valueModel->isNewRecord || $valueModel->isAttributeChanged('value', $this->identicalValueCompare)) {
-            $valueModel->save();
-        }
+        $valueModel->get($id)->setValue($value)->save();
+
         if ($this->enableCache) {
             Yii::$app->cache->set($valueModel->getCacheKey(), $value);
         }
@@ -275,8 +261,6 @@ class Entity extends Model
         $defaultValueModel = $attr->createValue();
         $id = $owner->primaryKey;
 
-        $defaultValueModel->entity_id = $id;
-
         if ($this->enableCache) {
             $cacheKey = $defaultValueModel->getCacheKey();
 
@@ -284,7 +268,7 @@ class Entity extends Model
 
             if ($value === false) {
 
-                $value = $this->getValueInternal($defaultValueModel, $attr, $id);
+                $value = $this->getValueInternal($defaultValueModel, $id);
 
                 if ($value !== false) {
                     Yii::$app->cache->set($cacheKey, $value);
@@ -294,22 +278,18 @@ class Entity extends Model
             return $value;
         }
 
-        return $this->getValueInternal($defaultValueModel, $attr, $id);
+        return $this->getValueInternal($defaultValueModel, $id);
     }
 
     /**
-     * @param Value $defaultValueModel
+     * @param ValueProxy $valueProxy
      * @param Attribute $attribute
      * @param $id
      * @return mixed|null
      */
-    protected function getValueInternal(Value $defaultValueModel, Attribute $attribute, $id)
+    protected function getValueInternal(ValueProxy $valueProxy, $id)
     {
-        $query = $defaultValueModel::find();
-        $valueModel = $query->andWhere(['attribute_id' => $attribute->id, 'entity_id' => $id])->one();
-        $value = $valueModel ? $valueModel->value : null;
-
-        return $value;
+        return $valueProxy->get($id)->getValue();
     }
 
     /**

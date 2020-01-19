@@ -22,6 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a(Yii::t('eav', 'List'), ['index'], ['class' => 'btn btn-success']) ?>
+        <?php if ($model->attribute_id): ?>
+            <?= Html::a(Yii::t('eav', 'Attribute'), ['/eav/admin/attribute/view', 'id' => $model->attribute_id], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
         <?= Html::a(Yii::t('eav', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('eav', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',

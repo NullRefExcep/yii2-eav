@@ -140,19 +140,12 @@ class Value extends ActiveRecord
         return $this->hasOne(Attribute::class, ['id' => 'attribute_id']);
     }
 
-    /**
-     * @return string
-     */
-    public function getCacheKey()
-    {
-        return 'eav.value:' . $this->attribute_id . '-' . $this->entity_id;
-    }
 
     /**
      * Inline validator for array values for search scenario
      *
-     * @see DecimalValue, IntegerValue
      * @param $attribute
+     * @see DecimalValue, IntegerValue
      */
     public function anyIsset($attribute)
     {

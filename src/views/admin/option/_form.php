@@ -13,8 +13,17 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'attribute_id')->dropDownList(Attribute::find()
-        ->andWhere(['type' => \nullref\eav\models\Types::TYPE_OPTION])->getMap()) ?>
+    <?php if ($model->attribute_id): ?>
+        <?= $form->field($model, 'attribute_id', [
+            'options' => ['class' => 'empty-class'],
+            'errorOptions' => ['class' => 'empty-class'],
+        ])->hiddenInput() ?>
+
+        <?= $form->field($model, 'attributeRecord[name]')->textInput(['readonly' => true])->label(false) ?>
+    <?php else: ?>
+        <?= $form->field($model, 'attribute_id')->dropDownList(Attribute::find()
+            ->andWhere(['type' => \nullref\eav\models\Types::TYPE_OPTION])->getMap()) ?>
+    <?php endif ?>
 
     <?= $form->field($model, 'sort_order')->textInput() ?>
 

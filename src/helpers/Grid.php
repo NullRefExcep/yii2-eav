@@ -11,7 +11,6 @@ namespace nullref\eav\helpers;
 use kartik\select2\Select2;
 use mcms\xeditable\XEditableColumn;
 use nullref\core\widgets\ActiveRangeInputGroup;
-use nullref\eav\models\Attribute;
 use nullref\eav\models\Entity;
 use nullref\eav\models\Types;
 use yii\base\Model;
@@ -136,8 +135,15 @@ class Grid
     {
         if (isset($item['items'])) {
             $column['value'] = function ($model) use ($column, $item) {
-                if ($model->{$column['attribute']}) {
-                    return $item['items'][$model->{$column['attribute']}];
+                $value = $model->{$column['attribute']};
+                if ($value) {
+                    if (is_array($value)) {
+                        $items = array_map(function ($value) use ($item) {
+                            return $item['items'][$value];
+                        }, $value);
+                        return implode(', ', $items);
+                    }
+                    return $item['items'][$value];
                 }
                 return '';
             };

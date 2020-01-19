@@ -6,20 +6,13 @@ use nullref\eav\components\Manager;
 use nullref\eav\models\attribute\Option;
 use nullref\eav\models\attribute\OptionQuery;
 use nullref\eav\models\attribute\Set;
-use nullref\eav\models\value\DecimalValue;
-use nullref\eav\models\value\ImageValue;
-use nullref\eav\models\value\IntegerValue;
-use nullref\eav\models\value\JsonValue;
-use nullref\eav\models\value\OptionValue;
-use nullref\eav\models\value\StringValue;
-use nullref\eav\models\value\TextValue;
-use nullref\eav\models\value\UrlValue;
-use nullref\eav\widgets\inputs\DefaultInput;
-use nullref\eav\widgets\inputs\OptionInput;
-use nullref\eav\widgets\inputs\TextInput;
+use nullref\eav\models\value_proxy\MultipleValueProxy;
+use nullref\eav\models\value_proxy\SingleValueProxy;
+use nullref\eav\models\value_proxy\ValueProxy;
 use nullref\useful\behaviors\JsonBehavior;
 use nullref\useful\traits\Mappable;
 use Yii;
+use yii\base\Exception;
 use yii\db\ActiveRecord;
 
 /**
@@ -149,17 +142,18 @@ class Attribute extends ActiveRecord
     }
 
     /**
-     * @return Value
+     * @return ValueProxy
      */
     public function createValue()
     {
-        $class = $this->getValueClass();
+        $valueClass = $this->getValueClass();
 
-        /** @var Value $model */
-        $model = new $class;
+        $isMultiple = isset($this->config['multiple']) && $this->config['multiple'];
 
-        $model->attribute_id = $this->id;
-        $model->attributeModel = $this;
+        $proxyValueClass = $isMultiple ? MultipleValueProxy::class : SingleValueProxy::class;
+
+        /** @var ValueProxy $model */
+        $model = new $proxyValueClass($valueClass, $this);
 
         return $model;
     }
@@ -169,6 +163,8 @@ class Attribute extends ActiveRecord
      */
     public function createValueQuery()
     {
+        throw new Exception('This method is deprecated');
+
         $class = $this->getValueClass();
 
         /** @var ValueQuery $query */

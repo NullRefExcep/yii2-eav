@@ -35,6 +35,9 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'config[editable]')
             ->checkbox([], false)
             ->label(Yii::t('eav', 'Editable')) ?>
+        <?= $form->field($model, 'config[multiple]')
+            ->checkbox([], false)
+            ->label(Yii::t('eav', 'Multiple')) ?>
     <?php endif ?>
 
     <div class="form-group">
