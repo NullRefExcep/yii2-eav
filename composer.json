@@ -4,7 +4,7 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=7.0.0",
         "kartik-v/yii2-widget-select2": "^2.1@dev",
         "marciocamello/yii2-x-editable": "dev-master",
         "nullref/yii2-core": ">=0.0.4",
