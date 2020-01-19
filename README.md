@@ -2,6 +2,8 @@ Yii2 EAV
 ===============
 
 
+[![Latest Stable Version](https://poser.pugx.org/nullref/yii2-eav/v/stable)](https://packagist.org/packages/nullref/yii2-eav) [![Total Downloads](https://poser.pugx.org/nullref/yii2-eav/downloads)](https://packagist.org/packages/nullref/yii2-eav) [![Latest Unstable Version](https://poser.pugx.org/nullref/yii2-eav/v/unstable)](https://packagist.org/packages/nullref/yii2-eav) [![License](https://poser.pugx.org/nullref/yii2-eav/license)](https://packagist.org/packages/nullref/yii2-eav)
+
 
 WIP
 
