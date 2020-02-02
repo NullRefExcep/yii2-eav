@@ -48,20 +48,34 @@ class Grid
             if (!$item['config']['show_in_grid']) {
                 continue;
             }
-            $column = [
-                'label' => $item['name'],
-                'attribute' => $code,
-            ];
-            if (isset($item['config']['editable']) && $item['config']['editable']) {
-                $column = self::getEditableConfig($column, $item);
-            }
-
-            $column = self::addFilter($column, $item, $searchModel);
-            $column = self::addValue($column, $item);
-            $result[$code] = $column;
+            $result[$code] = self::getColumnConfig($code, $entity, $searchModel);
         }
 
         return $result;
+    }
+
+    /**
+     * @param $code
+     * @param Entity $entity
+     * @param null $searchModel
+     * @throws \Exception
+     */
+    public static function getColumnConfig($code, Entity $entity, $searchModel = null)
+    {
+        $item = $entity->getAttributesConfig()[$code];
+
+        $column = [
+            'label' => $item['name'],
+            'attribute' => $code,
+        ];
+        if (isset($item['config']['editable']) && $item['config']['editable']) {
+            $column = self::getEditableConfig($column, $item);
+        }
+
+        $column = self::addFilter($column, $item, $searchModel);
+        $column = self::addValue($column, $item);
+
+        return $column;
     }
 
     /**
