@@ -13,9 +13,11 @@ class OptionInput extends AttributeInput
     {
         $items = ArrayHelper::remove($this->config, 'items', []);
         if (isset($this->config['config']['multiple']) && $this->config['config']['multiple']) {
-            return $this->field->checkboxList($items, ArrayHelper::remove($this->config, 'options', []));
+            return $this->field
+                ->checkboxList($items, ArrayHelper::remove($this->config, 'options', []));
         }
-        return $this->field->dropDownList($items,
-            ArrayHelper::remove($this->config, 'options', ['prompt' => '']))->label($this->config['name']);
+        return $this->field
+            ->dropDownList($items, ArrayHelper::remove($this->config, 'options', ['prompt' => '']))
+            ->label($this->getLabel());
     }
 }

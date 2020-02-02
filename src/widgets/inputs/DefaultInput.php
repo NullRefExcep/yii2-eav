@@ -11,7 +11,9 @@ class DefaultInput extends AttributeInput
 {
     function run()
     {
-        return $this->field->textInput(ArrayHelper::remove($this->config, 'options', []))->label($this->config['name']);
+        return $this->field
+            ->textInput(ArrayHelper::remove($this->config, 'options', []))
+            ->label($this->getLabel());
     }
 
 }

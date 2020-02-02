@@ -30,11 +30,13 @@ class Attributes extends Widget
     {
         $fields = [];
         foreach ($this->model->eav->getAttributesConfig() as $attribute => $config) {
-            $field = $this->form->field($this->model, $attribute);
-            $inputClass =  Manager::get()->getType($config['type'])->getInputClass();
+            $inputClass = Manager::get()->getType($config['type'])->getInputClass();
+            /** @var AttributeInput $widget */
             $widget = new $inputClass([
                 'config' => $config,
-                'field' => $field,
+                'form' => $this->form,
+                'model' => $this->model,
+                'attribute' => $attribute,
             ]);
             $fields[] = $widget->run();
         }

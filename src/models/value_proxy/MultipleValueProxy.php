@@ -118,6 +118,9 @@ class MultipleValueProxy extends ValueProxy
      */
     public function setValue($value = [])
     {
+        if (empty($value)) {
+            $value = [];
+        }
         $this->_values = $value;
         return $this;
     }

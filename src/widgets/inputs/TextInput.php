@@ -11,7 +11,9 @@ class TextInput extends AttributeInput
 {
     function run()
     {
-        return $this->field->textarea(ArrayHelper::remove($this->config, 'options', []))->label($this->config['name']);
+        return $this->field
+            ->textarea(ArrayHelper::remove($this->config, 'options', []))
+            ->label($this->getLabel());
     }
 
 }
