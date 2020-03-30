@@ -14,7 +14,7 @@ class m170520_151321_eav__create_tables extends Migration
                 'id' => $this->primaryKey(),
                 'code' => $this->string(),
                 'name' => $this->string()->unique(),
-            ]);
+            ], $this->getTableOptions());
 
             $this->createTable('{{%eav_attribute}}', [
                 'id' => $this->primaryKey(),

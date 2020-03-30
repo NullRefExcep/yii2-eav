@@ -23,28 +23,26 @@ use yii\db\Exception;
  */
 class Entity extends Model
 {
-    /** @var Set[] */
-    public $sets = [];
-
-    /** @var bool */
-    public $identicalValueCompare = false;
-
-    /** @var Attribute[] */
-    public $_attributeModels = [];
-
-    /** @var ActiveRecord */
-    protected $owner;
-
-    /** @var bool */
-    public $enableCache = true;
-
-    protected $_attributesConfig = [];
-    protected $_attributes = [];
-
     /**
      * Static field for caching sets of attribute models
      */
     protected static $_attributeSetCache = [];
+    /** @var Set[] */
+    public $sets = [];
+    /** @var bool */
+    public $identicalValueCompare = false;
+    /** @var Attribute[] */
+    public $_attributeModels = [];
+    /** @var bool */
+    public $enableCache = true;
+
+    /** @var callable */
+    public $filterAttributes;
+
+    /** @var ActiveRecord */
+    protected $owner;
+    protected $_attributesConfig = [];
+    protected $_attributes = [];
 
     /**
      * @param $entity
@@ -74,6 +72,9 @@ class Entity extends Model
                     throw new InvalidConfigException('Entity set should be instance of ' . Set::class);
                 }
                 $attributeList = $set->attributeList;
+                if ($this->filterAttributes && is_callable($this->filterAttributes)) {
+                    $attributeList = call_user_func($this->filterAttributes, $attributeList);
+                }
                 self::$_attributeSetCache[$set->id] = $attributeList;
             }
             foreach ($attributeList as $code => $attribute) {

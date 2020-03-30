@@ -55,7 +55,7 @@ abstract class AttributeInput extends ActiveField
      */
     protected function getLabel()
     {
-        if ($this->label === null){
+        if ($this->label === null) {
             return $this->config['name'];
         }
         return $this->label;

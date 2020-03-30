@@ -168,18 +168,54 @@ To configure which columns will be shown in grid go to attribute update page and
 Customization
 -------------
 
-To add custom types you need to use type `Manager`.
+To add custom types you need to use type `\nullref\eav\components\Manager`.
 To get more details please check `\nullref\eav\Bootstrap::setupManager` as example of configuring base types.
 
 You could call `\nullref\eav\components\Manager::registerType` at bootstrap phase and define you own types of attributes.
 
 Method `registerType` takes one argument by type `\nullref\eav\models\Type` this class contains all info about particular type:
 
-- name (unique)
+- name (unique string)
 - label
 - value model class (based on `\nullref\eav\widgets\AttributeInput`)
 - form input class (based on `\nullref\eav\models\Value`)
 
+```php
+Manager::get()->registerType(new Type(
+    Types::TYPE_IMAGE, 
+    Yii::t('eav', 'Image'), 
+    JsonValue::class, 
+    ImageInput::class)
+);
+```
+
+Filtering attributes
+--------------------
+
+If you need filter EAV attributes you could use `filterAttributes` and pass callable there:
+```php
+
+'eav' => [
+    'class' => Entity::class,
+    'entity' => function () {
+        return new EntityModel([
+            'sets' => [
+                Memoize::call([Set::class, 'findOne'], [['code' => 'product']]),
+            ],
+            'filterAttributes' => function ($attributes) {
+                $fieldCheckerService = Yii::$container->get(CheckerService::class);
+                $result = [];
+                foreach ($attributes as $code => $attr) {
+                    if ($fieldCheckerService->isAllowedForClass(self::class, $code)) {
+                        $result[$code] = $attr;
+                    }
+                }
+                return $result;
+            }
+        ]);
+    },
+],
+```
 
 Translations
 ------------

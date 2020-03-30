@@ -5,15 +5,6 @@ namespace nullref\eav;
 use nullref\core\interfaces\IAdminModule;
 use nullref\core\interfaces\IHasMigrateNamespace;
 use nullref\eav\components\Manager;
-use nullref\eav\models\Type;
-use nullref\eav\models\value\IntegerValue;
-use nullref\eav\models\value\JsonValue;
-use nullref\eav\models\value\OptionValue;
-use nullref\eav\models\value\StringValue;
-use nullref\eav\models\value\TextValue;
-use nullref\eav\widgets\inputs\DefaultInput;
-use nullref\eav\widgets\inputs\OptionInput;
-use nullref\eav\widgets\inputs\TextInput;
 use rmrevin\yii\fontawesome\FA;
 use Yii;
 use yii\base\Module as BaseModule;
@@ -29,6 +20,7 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
      * @inheritdoc
      */
     public $controllerNamespace = 'nullref\eav\controllers';
+    protected $manager;
 
     /**
      * @return array
@@ -39,27 +31,29 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
             'order' => 100,
             'label' => Yii::t('eav', 'EAV'),
             'icon' => FA::_LIST_ALT,
+            'roles' => ['eav'],
             'items' => [
                 [
                     'label' => Yii::t('eav', 'Attribute Sets'),
                     'url' => ['/eav/admin/set'],
                     'icon' => FA::_TAGS,
+                    'roles' => ['eav'],
                 ],
                 [
                     'label' => Yii::t('eav', 'Attributes'),
                     'url' => ['/eav/admin/attribute'],
                     'icon' => FA::_LIST,
+                    'roles' => ['eav'],
                 ],
                 [
                     'label' => Yii::t('eav', 'Options'),
                     'url' => ['/eav/admin/option'],
                     'icon' => FA::_LIST,
+                    'roles' => ['eav'],
                 ],
             ],
         ];
     }
-
-    protected $manager;
 
     /**
      * @return Manager
