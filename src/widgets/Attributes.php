@@ -8,7 +8,7 @@
 namespace nullref\eav\widgets;
 
 
-use nullref\eav\components\Manager;
+use nullref\eav\components\TypesManager;
 use yii\base\Widget;
 use yii\widgets\ActiveForm;
 
@@ -17,11 +17,16 @@ class Attributes extends Widget
     /** @var  ActiveForm */
     public $form;
 
-    /** @var  */
+    /** @var */
     public $model;
 
-    /** @var string  */
+    /** @var string */
     public $itemWrapClass = 'col-md-6';
+
+    /**
+     * @var array 
+     */
+    public $attributes = [];
 
     /**
      * @return string
@@ -30,7 +35,10 @@ class Attributes extends Widget
     {
         $fields = [];
         foreach ($this->model->eav->getAttributesConfig() as $attribute => $config) {
-            $inputClass = Manager::get()->getType($config['type'])->getInputClass();
+            if ($this->attributes && !in_array($attribute, $this->attributes)) {
+                continue;
+            }
+            $inputClass = TypesManager::get()->getType($config['type'])->getInputClass();
             /** @var AttributeInput $widget */
             $widget = new $inputClass([
                 'config' => $config,

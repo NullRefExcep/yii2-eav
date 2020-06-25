@@ -9,7 +9,7 @@ namespace nullref\eav;
 
 
 use nullref\eav\behaviors\Formatter;
-use nullref\eav\components\Manager;
+use nullref\eav\components\TypesManager;
 use nullref\eav\models\Type;
 use nullref\eav\models\Types;
 use nullref\eav\models\TypeWithOptions;
@@ -52,15 +52,48 @@ class Bootstrap implements BootstrapInterface
             'class' => Formatter::class,
         ]);
 
-        $this->setupManager();
+        $this->setupManager(TypesManager::get());
+        $this->registerDefaultAttributesConfigProperties($module);
     }
 
     /**
-     *
+     * @param $module
      */
-    protected function setupManager()
+    protected function registerDefaultAttributesConfigProperties(Module $module)
     {
-        $manager = Manager::get();
+        $configProperties = [
+            'show_in_grid' => function ($activeField) {
+                return $activeField
+                    ->checkbox([], false)
+                    ->label(Yii::t('eav', 'Show in grid'));
+            },
+            'read_only' => function ($activeField) {
+                return $activeField
+                    ->checkbox([], false)
+                    ->label(Yii::t('eav', 'Read only'));
+            },
+            'editable' => function ($activeField) {
+                return $activeField
+                    ->checkbox([], false)
+                    ->label(Yii::t('eav', 'Editable'));
+            },
+            'multiple' => function ($activeField) {
+                return $activeField
+                    ->checkbox([], false)
+                    ->label(Yii::t('eav', 'Multiple'));
+            },
+        ];
+
+        foreach ($configProperties as $prop => $builder) {
+            $module->registerAttributesConfigProperty($prop, $builder);
+        }
+    }
+
+    /**
+     * @param $manager
+     */
+    protected function setupManager(TypesManager $manager)
+    {
         // Integer
         $manager->registerType(new Type(Types::TYPE_INT, Yii::t('eav', 'Integer'),
             IntegerValue::class, DefaultInput::class));

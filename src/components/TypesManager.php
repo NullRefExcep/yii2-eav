@@ -7,7 +7,11 @@ use nullref\eav\Module;
 use yii\base\Component;
 use yii\base\Exception;
 
-class Manager extends Component
+/**
+ * EAV types manager
+ * @package nullref\eav\components
+ */
+class TypesManager extends Component
 {
     /**
      * @var Type[]
@@ -50,6 +54,6 @@ class Manager extends Component
      */
     public static function get()
     {
-        return \Yii::$app->getModule(Module::MODULE_ID)->getManager();
+        return \Yii::$app->getModule(Module::MODULE_ID)->getTypesManager();
     }
 }

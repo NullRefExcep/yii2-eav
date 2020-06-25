@@ -2,7 +2,7 @@
 
 namespace nullref\eav\models;
 
-use nullref\eav\components\Manager;
+use nullref\eav\components\TypesManager;
 use nullref\eav\models\attribute\Option;
 use nullref\eav\models\attribute\OptionQuery;
 use nullref\eav\models\attribute\Set;
@@ -58,7 +58,7 @@ class Attribute extends ActiveRecord
      */
     public static function getTypesMap()
     {
-        return Manager::get()->getTypesMap();
+        return TypesManager::get()->getTypesMap();
     }
 
     /**
@@ -138,7 +138,7 @@ class Attribute extends ActiveRecord
      */
     public function hasOptions()
     {
-        return Manager::get()->getType($this->type)->hasOptions();
+        return TypesManager::get()->getType($this->type)->hasOptions();
     }
 
     /**
@@ -185,7 +185,7 @@ class Attribute extends ActiveRecord
      */
     public function getValueClass()
     {
-        return Manager::get()->getType($this->type)->getValueClass();
+        return TypesManager::get()->getType($this->type)->getValueClass();
     }
 
     /**

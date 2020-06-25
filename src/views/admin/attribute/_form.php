@@ -4,6 +4,7 @@ use nullref\eav\models\Attribute;
 use nullref\eav\models\attribute\Set;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use nullref\eav\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $model nullref\eav\models\Attribute */
@@ -26,18 +27,9 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'set_id')->dropDownList(Set::getMap()) ?>
     <?php else: ?>
-        <?= $form->field($model, 'config[show_in_grid]')
-            ->checkbox([], false)
-            ->label(Yii::t('eav', 'Show in grid')) ?>
-        <?= $form->field($model, 'config[read_only]')
-            ->checkbox([], false)
-            ->label(Yii::t('eav', 'Read only')) ?>
-        <?= $form->field($model, 'config[editable]')
-            ->checkbox([], false)
-            ->label(Yii::t('eav', 'Editable')) ?>
-        <?= $form->field($model, 'config[multiple]')
-            ->checkbox([], false)
-            ->label(Yii::t('eav', 'Multiple')) ?>
+        <?php foreach (Helper::getModule()->getAttributesConfigProperties() as $prop => $builder): ?>
+            <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
+        <?php endforeach; ?>
     <?php endif ?>
 
     <div class="form-group">

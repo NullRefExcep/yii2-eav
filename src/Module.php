@@ -4,7 +4,7 @@ namespace nullref\eav;
 
 use nullref\core\interfaces\IAdminModule;
 use nullref\core\interfaces\IHasMigrateNamespace;
-use nullref\eav\components\Manager;
+use nullref\eav\components\TypesManager;
 use rmrevin\yii\fontawesome\FA;
 use Yii;
 use yii\base\Module as BaseModule;
@@ -20,7 +20,27 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
      * @inheritdoc
      */
     public $controllerNamespace = 'nullref\eav\controllers';
-    protected $manager;
+    protected $typesManager;
+
+    protected $attributesConfigProperties = [];
+
+    /**
+     * @param $prop
+     * @param $builder
+     */
+    public function registerAttributesConfigProperty($prop, $builder)
+    {
+        $this->attributesConfigProperties[$prop] = $builder;
+    }
+
+    /**
+     * {property} => {builder}
+     * @return array
+     */
+    public function getAttributesConfigProperties()
+    {
+        return $this->attributesConfigProperties;
+    }
 
     /**
      * @return array
@@ -56,14 +76,14 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
     }
 
     /**
-     * @return Manager
+     * @return TypesManager
      */
-    public function getManager()
+    public function getTypesManager()
     {
-        if ($this->manager == null) {
-            $this->manager = new Manager();
+        if ($this->typesManager == null) {
+            $this->typesManager = new TypesManager();
         }
-        return $this->manager;
+        return $this->typesManager;
     }
 
     /**
