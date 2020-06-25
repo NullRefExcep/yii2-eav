@@ -27,7 +27,7 @@ class Attributes extends Widget
      * To override default model attributes
      * @var array
      */
-    public $attributes = [];
+    public $attributes = null;
 
     /**
      * @return string
@@ -36,7 +36,7 @@ class Attributes extends Widget
     {
         $fields = [];
         $attributes = $this->model->eav->getAttributesConfig();
-        if ($this->attributes) {
+        if (is_array($this->attributes)) {
             $attributes = $this->attributes;
         }
         foreach ($attributes as $attribute => $config) {
