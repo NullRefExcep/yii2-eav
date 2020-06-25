@@ -23,11 +23,11 @@ class Attributes
 
     /**
      * @param $model
-     * @param null $attributeList
+     * @param null|array $attributeList
      * @param string $eavProperty
      * @return array
      */
-    public static function getLabelValuePairs(Entity $model, $attributeList = null, $eavProperty = 'eav')
+    public static function getLabelValuePairs($model, $attributeList = null, $eavProperty = 'eav')
     {
         $attributeList = $attributeList ?? $model->{$eavProperty}->getAttributesConfig();
         $attributes = [];
