@@ -77,6 +77,11 @@ class Bootstrap implements BootstrapInterface
                     ->checkbox([], false)
                     ->label(Yii::t('eav', 'Editable'));
             },
+            'searchable' => function ($activeField) {
+                return $activeField
+                    ->checkbox([], false)
+                    ->label(Yii::t('eav', 'Searchable'));
+            },
             'multiple' => function ($activeField) {
                 return $activeField
                     ->checkbox([], false)
