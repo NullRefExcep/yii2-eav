@@ -41,10 +41,7 @@ class Attributes
             } else {
                 $value = isset($config['items']) ? ($config['items'][$value] ?? '') : $value;
             }
-            $attributes[] = [
-                'label' => $config['name'],
-                'value' => $value,
-            ];
+            $attributes[$config['name']] =  $value;
         }
         return $attributes;
     }
