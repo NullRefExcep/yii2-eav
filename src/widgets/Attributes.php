@@ -24,7 +24,8 @@ class Attributes extends Widget
     public $itemWrapClass = 'col-md-6';
 
     /**
-     * @var array 
+     * To override default model attributes
+     * @var array
      */
     public $attributes = [];
 
@@ -34,10 +35,11 @@ class Attributes extends Widget
     public function run()
     {
         $fields = [];
-        foreach ($this->model->eav->getAttributesConfig() as $attribute => $config) {
-            if ($this->attributes && !in_array($attribute, $this->attributes)) {
-                continue;
-            }
+        $attributes = $this->model->eav->getAttributesConfig();
+        if ($this->attributes) {
+            $attributes = $this->attributes;
+        }
+        foreach ($attributes as $attribute => $config) {
             $inputClass = TypesManager::get()->getType($config['type'])->getInputClass();
             /** @var AttributeInput $widget */
             $widget = new $inputClass([

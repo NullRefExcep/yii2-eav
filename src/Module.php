@@ -76,7 +76,7 @@ class Module extends BaseModule implements IAdminModule, IHasMigrateNamespace
     }
 
     /**
-     * @return TypesManager
+     * @return Manager
      */
     public function getTypesManager()
     {
