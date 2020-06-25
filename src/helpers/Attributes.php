@@ -27,7 +27,7 @@ class Attributes
      * @param string $eavProperty
      * @return array
      */
-    public static function getStringValues(Entity $model, $attributeList = null, $eavProperty = 'eav')
+    public static function getLabelValuePairs(Entity $model, $attributeList = null, $eavProperty = 'eav')
     {
         $attributeList = $attributeList ?? $model->{$eavProperty}->getAttributesConfig();
         $attributes = [];
@@ -41,7 +41,10 @@ class Attributes
             } else {
                 $value = isset($config['items']) ? ($config['items'][$value] ?? '') : $value;
             }
-            $attributes[$config['name']] =  $value;
+            $attributes[] = [
+                'label' => $config['name'],
+                'value' => $value,
+            ];
         }
         return $attributes;
     }

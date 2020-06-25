@@ -13,7 +13,7 @@ use nullref\eav\models\Entity;
 class DetailViewAttributes
 {
     /**
-     * @deprecated use \nullref\eav\helpers\Attributes::getStringValues instead
+     * @deprecated use \nullref\eav\helpers\Attributes::getLabelValuePairs instead
      * @param Entity $eavModel
      * @return array
      */
