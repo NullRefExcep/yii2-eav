@@ -130,7 +130,7 @@ class Attribute extends ActiveRecord
      */
     public function getOptions()
     {
-        return $this->hasMany(Option::class, ['attribute_id' => 'id']);
+        return $this->hasMany(Option::class, ['attribute_id' => 'id'])->orderBy('sort_order');
     }
 
     /**
