@@ -1,10 +1,10 @@
 <?php
 
+use nullref\eav\helpers\Helper;
 use nullref\eav\models\Attribute;
 use nullref\eav\models\attribute\Set;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use nullref\eav\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $model nullref\eav\models\Attribute */
@@ -14,7 +14,6 @@ use nullref\eav\helpers\Helper;
 <div class="attribute-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -28,6 +27,9 @@ use nullref\eav\helpers\Helper;
         <?= $form->field($model, 'set_id')->dropDownList(Set::getMap()) ?>
     <?php else: ?>
         <?php foreach (Helper::getModule()->getAttributesConfigProperties() as $prop => $builder): ?>
+            <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
+        <?php endforeach; ?>
+        <?php foreach (Helper::getTypesManager()->getType($model->type)->getConfigProperties() as $prop => $builder): ?>
             <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
         <?php endforeach; ?>
     <?php endif ?>

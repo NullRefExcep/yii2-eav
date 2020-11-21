@@ -1,7 +1,7 @@
 <?php
 
 
-namespace nullref\eav\models;
+namespace nullref\eav\types;
 
 
 class Types

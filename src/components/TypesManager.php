@@ -2,7 +2,7 @@
 
 namespace nullref\eav\components;
 
-use nullref\eav\models\Type;
+use nullref\eav\types\Type;
 use nullref\eav\Module;
 use yii\base\Component;
 use yii\base\Exception;

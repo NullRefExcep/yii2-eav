@@ -20,4 +20,12 @@ class Helper
     {
         return Yii::$app->getModule(Module::MODULE_ID);
     }
+
+    /**
+     * @return \nullref\eav\components\TypesManager
+     */
+    public static function getTypesManager()
+    {
+        return self::getModule()->getTypesManager();
+    }
 }

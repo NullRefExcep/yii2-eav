@@ -10,9 +10,9 @@ namespace nullref\eav;
 
 use nullref\eav\behaviors\Formatter;
 use nullref\eav\components\TypesManager;
-use nullref\eav\models\Type;
-use nullref\eav\models\Types;
-use nullref\eav\models\TypeWithOptions;
+use nullref\eav\types\Type;
+use nullref\eav\types\Types;
+use nullref\eav\types\TypeWithOptions;
 use nullref\eav\models\value\DecimalValue;
 use nullref\eav\models\value\IntegerValue;
 use nullref\eav\models\value\JsonValue;
