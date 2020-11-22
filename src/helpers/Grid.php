@@ -12,7 +12,6 @@ use kartik\select2\Select2;
 use mcms\xeditable\XEditableColumn;
 use nullref\core\widgets\ActiveRangeInputGroup;
 use nullref\eav\models\Entity;
-use nullref\eav\models\Types;
 use yii\base\Model;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;

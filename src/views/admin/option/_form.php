@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'attributeRecord[name]')->textInput(['readonly' => true])->label(false) ?>
     <?php else: ?>
         <?= $form->field($model, 'attribute_id')->dropDownList(Attribute::find()
-            ->andWhere(['type' => \nullref\eav\models\Types::TYPE_OPTION])->getMap()) ?>
+            ->andWhere(['type' => \nullref\eav\types\Types::TYPE_OPTION])->getMap()) ?>
     <?php endif ?>
 
     <?= $form->field($model, 'sort_order')->textInput() ?>
