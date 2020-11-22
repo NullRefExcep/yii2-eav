@@ -10,23 +10,27 @@ namespace nullref\eav;
 
 use nullref\eav\behaviors\Formatter;
 use nullref\eav\components\TypesManager;
-use nullref\eav\types\Type;
-use nullref\eav\types\Types;
-use nullref\eav\types\TypeWithOptions;
+use nullref\eav\features\Editable;
+use nullref\eav\features\RangeFilter;
+use nullref\eav\features\Select2;
 use nullref\eav\models\value\DecimalValue;
 use nullref\eav\models\value\IntegerValue;
 use nullref\eav\models\value\JsonValue;
 use nullref\eav\models\value\OptionValue;
 use nullref\eav\models\value\StringValue;
 use nullref\eav\models\value\TextValue;
+use nullref\eav\types\Decimal;
+use nullref\eav\types\Type;
+use nullref\eav\types\Types;
+use nullref\eav\types\TypeWithOptions;
 use nullref\eav\widgets\inputs\DefaultInput;
 use nullref\eav\widgets\inputs\MultilineInput;
 use nullref\eav\widgets\inputs\OptionInput;
 use nullref\eav\widgets\inputs\TextInput;
+use Yii;
 use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\i18n\PhpMessageSource;
-use Yii;
 
 class Bootstrap implements BootstrapInterface
 {
@@ -54,6 +58,17 @@ class Bootstrap implements BootstrapInterface
 
         $this->setupManager(TypesManager::get());
         $this->registerDefaultAttributesConfigProperties($module);
+        $this->setupFeatures($module);
+    }
+
+    /**
+     * @param Module $module
+     */
+    protected function setupFeatures(Module $module)
+    {
+        Editable::setup($module);
+        Select2::setup($module);
+        RangeFilter::setup($module);
     }
 
     /**
@@ -71,11 +86,6 @@ class Bootstrap implements BootstrapInterface
                 return $activeField
                     ->checkbox([], false)
                     ->label(Yii::t('eav', 'Read only'));
-            },
-            'editable' => function ($activeField) {
-                return $activeField
-                    ->checkbox([], false)
-                    ->label(Yii::t('eav', 'Editable'));
             },
             'searchable' => function ($activeField) {
                 return $activeField
@@ -103,7 +113,7 @@ class Bootstrap implements BootstrapInterface
         $manager->registerType(new Type(Types::TYPE_INT, Yii::t('eav', 'Integer'),
             IntegerValue::class, DefaultInput::class));
         // Decimal
-        $manager->registerType(new Type(Types::TYPE_DECIMAL, Yii::t('eav', 'Decimal'),
+        $manager->registerType(new Decimal(Types::TYPE_DECIMAL, Yii::t('eav', 'Decimal'),
             DecimalValue::class, DefaultInput::class));
         // String
         $manager->registerType(new Type(Types::TYPE_STRING, Yii::t('eav', 'String'),
@@ -117,5 +127,9 @@ class Bootstrap implements BootstrapInterface
         // Option
         $manager->registerType(new TypeWithOptions(Types::TYPE_OPTION, Yii::t('eav', 'Option'),
             OptionValue::class, OptionInput::class));
+
+        // Price
+        $manager->registerType(new Type(Types::TYPE_PRICE, Yii::t('eav', 'Price'),
+            DecimalValue::class, DefaultInput::class));
     }
 }

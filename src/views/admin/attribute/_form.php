@@ -26,12 +26,18 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'set_id')->dropDownList(Set::getMap()) ?>
     <?php else: ?>
-        <?php foreach (Helper::getModule()->getAttributesConfigProperties() as $prop => $builder): ?>
-            <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
-        <?php endforeach; ?>
-        <?php foreach (Helper::getTypesManager()->getType($model->type)->getConfigProperties() as $prop => $builder): ?>
-            <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
-        <?php endforeach; ?>
+        <div class="row">
+            <div class="col-md-6">
+                <?php foreach (Helper::getModule()->getAttributesConfigProperties() as $prop => $builder): ?>
+                    <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
+                <?php endforeach; ?>
+            </div>
+            <div class="col-md-6">
+                <?php foreach (Helper::getTypesManager()->getType($model->type)->getConfigProperties() as $prop => $builder): ?>
+                    <?= $builder($form->field($model, 'config[' . $prop . ']')) ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
     <?php endif ?>
 
     <div class="form-group">

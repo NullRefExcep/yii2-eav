@@ -15,5 +15,4 @@ class DefaultInput extends AttributeInput
             ->textInput(ArrayHelper::remove($this->config, 'options', []))
             ->label($this->getLabel());
     }
-
 }

@@ -15,4 +15,5 @@ class Types
     const TYPE_IMAGE = 'image';
     const TYPE_TEXT = 'text';
     const TYPE_JSON = 'json';
+    const TYPE_PRICE = 'price';
 }
