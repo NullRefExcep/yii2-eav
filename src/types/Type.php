@@ -70,6 +70,14 @@ class Type extends Component
     }
 
     /**
+     * @param $class
+     */
+    public function setInputClass($class)
+    {
+        $this->_inputClass = $class;
+    }
+
+    /**
      * @return bool
      */
     public function hasOptions()

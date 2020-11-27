@@ -8,6 +8,7 @@ use mcms\xeditable\XEditableColumn;
 use nullref\eav\events\BuildGridColumnConfigEvent;
 use nullref\eav\Module;
 use nullref\eav\types\Type;
+use Yii;
 use yii\base\Event;
 use yii\helpers\Url;
 
@@ -19,7 +20,7 @@ class Editable
         $module->registerAttributesConfigProperty('editable', function ($activeField) {
             return $activeField
                 ->checkbox([], false)
-                ->label(\Yii::t('eav', 'Editable'));
+                ->label(Yii::t('eav', 'Editable'));
         });
 
         Event::on(Type::class, Type::EVENT_AFTER_BUILD_GRID_COLUMN_CONFIG,

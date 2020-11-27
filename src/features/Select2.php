@@ -5,18 +5,24 @@ namespace nullref\eav\features;
 
 
 use nullref\eav\events\BuildGridColumnConfigEvent;
+use nullref\eav\features\select2\OptionInput;
 use nullref\eav\Module;
 use nullref\eav\types\Type;
+use nullref\eav\types\Types;
 use yii\base\Event;
 
 class Select2
 {
+    /**
+     * @param Module $module
+     */
     public static function setup(Module $module)
     {
         Event::on(Type::class, Type::EVENT_AFTER_BUILD_GRID_COLUMN_CONFIG,
             function (BuildGridColumnConfigEvent $event) {
-                $config = $event->attributeConfig;
+                $attributeConfig = $event->attributeConfig;
                 $column = $event->column;
+                $searchModel = $event->searchModel;
 
                 if ($event->searchModel) {
                     if (isset($attributeConfig['items'])) {
@@ -34,5 +40,6 @@ class Select2
                 }
 
             });
+        $module->getTypesManager()->getType(Types::TYPE_OPTION)->setInputClass(OptionInput::class);
     }
 }

@@ -8,6 +8,7 @@ use nullref\core\widgets\ActiveRangeInputGroup;
 use nullref\eav\events\BuildGridColumnConfigEvent;
 use nullref\eav\Module;
 use nullref\eav\types\Type;
+use Yii;
 use yii\base\Event;
 
 class RangeFilter
@@ -18,13 +19,14 @@ class RangeFilter
         $module->registerAttributesConfigProperty('range_filter', function ($activeField) {
             return $activeField
                 ->checkbox([], false)
-                ->label(\Yii::t('eav', 'Range Filter'));
+                ->label(Yii::t('eav', 'Range Filter'));
         });
 
         Event::on(Type::class, Type::EVENT_AFTER_BUILD_GRID_COLUMN_CONFIG,
             function (BuildGridColumnConfigEvent $event) {
                 $config = $event->attributeConfig;
                 $column = $event->column;
+                $searchModel = $event->searchModel;
 
                 if ($event->searchModel) {
                     if (isset($config['config']['range_filter']) && $config['config']['range_filter']) {
