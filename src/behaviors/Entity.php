@@ -11,6 +11,7 @@ namespace nullref\eav\behaviors;
 use nullref\eav\models\Entity as EntityModel;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
+use yii\db\AfterSaveEvent;
 use yii\validators\Validator;
 
 /**
@@ -72,9 +73,10 @@ class Entity extends Behavior
     }
 
     /**
+     * @param AfterSaveEvent $event
      * @throws \yii\db\Exception
      */
-    public function afterSave()
+    public function afterSave(AfterSaveEvent $event)
     {
         $this->entityModel->save();
     }

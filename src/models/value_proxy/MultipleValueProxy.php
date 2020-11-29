@@ -3,11 +3,6 @@
 namespace nullref\eav\models\value_proxy;
 
 use nullref\eav\models\Value;
-use Yii;
-use yii\base\InvalidArgumentException;
-use yii\base\Model;
-use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model is proxy for real ActiveRecord
@@ -21,9 +16,13 @@ use yii\db\ActiveRecord;
  */
 class MultipleValueProxy extends ValueProxy
 {
+    /**
+     * @var Value[]
+     */
     protected $_valueModels = [];
 
     protected $_values = [];
+    protected $_oldValues = [];
 
     /**
      * @param $query
@@ -79,17 +78,48 @@ class MultipleValueProxy extends ValueProxy
      */
     public function save()
     {
-        $this->delete();
+        // Calculate diffs to know what records should be created and deleted
+        $valuesToCreate = array_diff($this->_values, $this->_oldValues);
+        $valuesToDelete = array_diff($this->_oldValues, $this->_values);
+        $deletedValueModels = [];
+        $existingValueModels = [];
+
+        // Split existing records into deleted and existing
+        if (!empty($valuesToDelete)) {
+            foreach ($this->_valueModels as $valueModel) {
+                if (in_array($valueModel->value, $valuesToDelete)) {
+                    $deletedValueModels[] = $valueModel;
+                } else {
+                    $existingValueModels[] = $valueModel;
+                }
+            }
+        }
 
         $self = $this;
-        $this->_valueModels = array_map(function ($value) use ($self) {
+        // Create models for new values
+        $createdValueModels = array_map(function ($value) use ($self) {
             $model = $self->createValueInstance();
             $model->value = $value;
-            if (!$model->save()) {
-                throw new Exception("Can't save value. \nError: " . print_r($this->getValueModel()->errors));
-            }
             return $model;
-        }, $this->_values);
+        }, $valuesToCreate);
+
+        if (!empty($valuesToDelete) || !empty($valuesToCreate)) {
+
+            $transaction = $this->getDefaultValueInstance()::getDb()->beginTransaction();
+
+            if (!empty($deletedValueModels)) {
+                foreach ($deletedValueModels as $item) {
+                    $item->delete();
+                }
+                foreach ($createdValueModels as $item) {
+                    $item->save();
+                }
+            }
+            $transaction->commit();
+            $this->_valueModels = array_merge($createdValueModels, $existingValueModels);
+            $this->_oldValues = $this->_values;
+        }
+
     }
 
     /**
@@ -102,6 +132,20 @@ class MultipleValueProxy extends ValueProxy
         $self = parent::get($entityId);
         $this->loadModels($entityId);
         return $self;
+    }
+
+    /**
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function loadModels()
+    {
+        $this->_valueModels = $this->getDefaultValueInstance()::find()
+            ->andWhere(['attribute_id' => $this->_attributeModel->id, 'entity_id' => $this->_entityId])->all();
+
+        $this->_values = array_map(function (Value $value) {
+            return $value->value;
+        }, $this->_valueModels);
+        $this->_oldValues = $this->_values;
     }
 
     /**
@@ -124,18 +168,4 @@ class MultipleValueProxy extends ValueProxy
         $this->_values = $value;
         return $this;
     }
-
-    /**
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function loadModels()
-    {
-        $this->_valueModels = $this->getDefaultValueInstance()::find()
-            ->andWhere(['attribute_id' => $this->_attributeModel->id, 'entity_id' => $this->_entityId])->all();
-
-        $this->_values = array_map(function (Value $value) {
-            return $value->value;
-        }, $this->_valueModels);
-    }
-
 }
