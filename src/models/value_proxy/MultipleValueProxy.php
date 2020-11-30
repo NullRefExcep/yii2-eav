@@ -165,6 +165,9 @@ class MultipleValueProxy extends ValueProxy
         if (empty($value)) {
             $value = [];
         }
+        if (!is_array($value)) {
+            $value = [$value];
+        }
         $this->_values = $value;
         return $this;
     }
