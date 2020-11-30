@@ -78,9 +78,13 @@ class MultipleValueProxy extends ValueProxy
      */
     public function save()
     {
+        $values = $this->_values;
+        if (!is_array($values)) {
+            $values = [$values];
+        }
         // Calculate diffs to know what records should be created and deleted
-        $valuesToCreate = array_diff($this->_values, $this->_oldValues);
-        $valuesToDelete = array_diff($this->_oldValues, $this->_values);
+        $valuesToCreate = array_diff($values, $this->_oldValues);
+        $valuesToDelete = array_diff($this->_oldValues, $values);
         $deletedValueModels = [];
         $existingValueModels = [];
 
@@ -117,7 +121,7 @@ class MultipleValueProxy extends ValueProxy
             }
             $transaction->commit();
             $this->_valueModels = array_merge($createdValueModels, $existingValueModels);
-            $this->_oldValues = $this->_values;
+            $this->_oldValues = $values;
         }
 
     }
@@ -164,9 +168,6 @@ class MultipleValueProxy extends ValueProxy
     {
         if (empty($value)) {
             $value = [];
-        }
-        if (!is_array($value)) {
-            $value = [$value];
         }
         $this->_values = $value;
         return $this;
