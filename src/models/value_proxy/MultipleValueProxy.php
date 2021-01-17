@@ -115,9 +115,9 @@ class MultipleValueProxy extends ValueProxy
                 foreach ($deletedValueModels as $item) {
                     $item->delete();
                 }
-                foreach ($createdValueModels as $item) {
-                    $item->save();
-                }
+            }
+            foreach ($createdValueModels as $item) {
+                $item->save();
             }
             $transaction->commit();
             $this->_valueModels = array_merge($createdValueModels, $existingValueModels);
