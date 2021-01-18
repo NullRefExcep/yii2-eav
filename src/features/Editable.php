@@ -4,8 +4,8 @@
 namespace nullref\eav\features;
 
 
-use mcms\xeditable\XEditableColumn;
 use nullref\eav\events\BuildGridColumnConfigEvent;
+use nullref\eav\features\editable\XEditableColumn;
 use nullref\eav\Module;
 use nullref\eav\types\Type;
 use Yii;
