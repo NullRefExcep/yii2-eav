@@ -65,17 +65,22 @@ class Entity extends Model
     {
         parent::init();
         foreach ($this->sets as $set) {
-            if (isset(self::$_attributeSetCache[$set->id])) {
-                $attributeList = self::$_attributeSetCache[$set->id];
+            $cacheKeyParts = [$set->id];
+            if ($this->filterAttributes && is_callable($this->filterAttributes)) {
+                $cacheKeyParts[] = spl_object_hash($this->filterAttributes);
+            }
+            $cacheKey = implode(':', $cacheKeyParts);
+            if (isset(self::$_attributeSetCache[$cacheKey])) {
+                $attributeList = self::$_attributeSetCache[$cacheKey];
             } else {
                 if (!($set instanceof Set)) {
                     throw new InvalidConfigException('Entity set should be instance of ' . Set::class);
                 }
                 $attributeList = $set->attributeList;
                 if ($this->filterAttributes && is_callable($this->filterAttributes)) {
-                    $attributeList = call_user_func($this->filterAttributes, $attributeList);
+                    $attributeList = call_user_func($this->filterAttributes, $attributeList, $set);
                 }
-                self::$_attributeSetCache[$set->id] = $attributeList;
+                self::$_attributeSetCache[$cacheKey] = $attributeList;
             }
             foreach ($attributeList as $code => $attribute) {
                 if (isset($this->_attributesConfig[$code])) {
